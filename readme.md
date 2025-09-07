@@ -1,10 +1,12 @@
 óli var að vinna í þessu file, pls everybody confirm að við erum game her type script:
 
-kleppir = daníel snær
+kleppir = daníel snær :^)
 
-skogabjorn = ragnar björn
+skogabjorn = ragnar björn :D
 
-Amaragance = ólafur sær
+Amaragance = ólafur sær xD
+
+Egill = Egill ( ˶°ㅁ°)!!
 
 hallo frá ragnari!!
 
