@@ -6,6 +6,7 @@ skogabjorn = ragnar björn
 
 Amaragance = ólafur sær
 
+hallo frá ragnari!!
 
 
 
