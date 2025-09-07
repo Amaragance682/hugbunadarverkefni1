@@ -10,6 +10,8 @@ Egill = Egill ( ˶°ㅁ°)!!
 
 hallo frá ragnari!!
 
+Daníel mættur á svæðið!
+
 
 
 doc skjal fyrir skilaverkefni 1:
