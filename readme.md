@@ -8,6 +8,8 @@ Amaragance = ólafur sær xD
 
 Egill = Egill ( ˶°ㅁ°)!!
 
+Buff Slayer
+
 hallo frá ragnari!!
 
 Daníel mættur á svæðið!
