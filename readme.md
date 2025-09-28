@@ -22,22 +22,22 @@ https://docs.google.com/document/d/14TPepnAFvG9aex2UdFMM2mAFnQ4oLKxGJmchXJklG7M/
 
 
 
-assignment 2 contribution distribution:
+git was being stupid so sorry for one big dump but anyways, assignment 2 contribution distribution is like this:
 
-ragnar
-Login og user functionality
-Security handling and checks
-JWT stuff
-ShiftService og TaskService
+ragnar:
+- Login og user functionality
+- Security handling and checks
+- JWT stuff
+- ShiftService og TaskService mostly
 
-egill
-db design and architecture
-endpoints so far and basic controller setup
+egill:
+- db design and architecture
+- endpoints so far and basic controller setup
 
-daniel
-Entities and repos according to db (boilerplate stuff eins og mappers)
+daniel:
+- Entities and repos according to db (boilerplate stuff eins og mappers)
 
-oli
-rest of services (not user-related and shiftservice/taskservice)
+oli:
+- rest of services (not user-related and shiftservice/taskservice)
 
 dtos were just made in cooperation
