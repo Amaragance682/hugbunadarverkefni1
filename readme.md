@@ -18,3 +18,26 @@ Daníel mættur á svæðið!
 
 doc skjal fyrir skilaverkefni 1:
 https://docs.google.com/document/d/14TPepnAFvG9aex2UdFMM2mAFnQ4oLKxGJmchXJklG7M/edit?tab=t.0
+
+
+
+
+assignment 2 contribution distribution:
+
+ragnar
+Login og user functionality
+Security handling and checks
+JWT stuff
+ShiftService og TaskService
+
+egill
+db design and architecture
+endpoints so far and basic controller setup
+
+daniel
+Entities and repos according to db (boilerplate stuff eins og mappers)
+
+oli
+rest of services (not user-related and shiftservice/taskservice)
+
+dtos were just made in cooperation
