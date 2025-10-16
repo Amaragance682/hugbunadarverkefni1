@@ -38,9 +38,4 @@ public class RegisterRequestDTO implements AuthRequestDTO {
     public String getPassword() {
         return password;
     }
-
-    @Override
-    public String toString() {
-        return name + ", " + email + ", " + password;
-    }
 }
