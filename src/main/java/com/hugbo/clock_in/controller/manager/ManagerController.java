@@ -37,9 +37,10 @@ public class ManagerController {
     @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId)")
     public ResponseEntity<?> addTask(
         @PathVariable Long companyId,
+        @PathVariable Long locationId,
         @RequestBody TaskRequestDTO taskRequestDTO
     ) {
-        TaskDTO taskDTO = taskService.addTask(companyId, taskRequestDTO);
+        TaskDTO taskDTO = taskService.addTask(companyId, locationId, taskRequestDTO);
         return ResponseEntity.ok().body(taskDTO);
     }
 

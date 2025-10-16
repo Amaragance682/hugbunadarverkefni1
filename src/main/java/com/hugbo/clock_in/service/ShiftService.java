@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import com.hugbo.clock_in.domain.entity.ShiftBreak;
 import com.hugbo.clock_in.domain.entity.ShiftTask;
 import com.hugbo.clock_in.domain.entity.Task;
 import com.hugbo.clock_in.dto.request.BreakRequestDTO;
+import com.hugbo.clock_in.dto.request.ShiftPatchRequestDTO;
 import com.hugbo.clock_in.dto.response.ShiftBreakDTO;
 import com.hugbo.clock_in.dto.response.ShiftCompleteDTO;
 import com.hugbo.clock_in.dto.response.ShiftDTO;
@@ -27,6 +29,8 @@ import com.hugbo.clock_in.repository.ShiftBreakRepository;
 import com.hugbo.clock_in.repository.ShiftRepository;
 import com.hugbo.clock_in.repository.ShiftTaskRepository;
 import com.hugbo.clock_in.repository.TaskRepository;
+
+import jakarta.validation.ValidationException;
 
 @Service
 public class ShiftService {
@@ -249,5 +253,28 @@ public class ShiftService {
             shiftTaskDTOs,
             shiftBreakDTOs
         );
+    }
+
+    public ShiftCompleteDTO patchShift(Long shiftId, ShiftPatchRequestDTO requestDTO) {
+        Shift shift = shiftRepository.findById(shiftId).orElseThrow();
+        validateShiftPatchRequest(requestDTO);
+
+        Instant startTs = requestDTO.startTs;
+        Instant endTs = requestDTO.endTs;
+
+        if (startTs != null) shift.startTs = startTs;
+        if (endTs != null) shift.endTs = endTs;
+
+        Shift savedShift = shiftRepository.save(shift);
+
+        return createCompleteShiftDTO(savedShift);
+    }
+
+    private void validateShiftPatchRequest(ShiftPatchRequestDTO request) {
+        Instant startTs = request.startTs;
+        Instant endTs = request.endTs;
+
+        if (startTs == null && endTs == null)
+            throw new ValidationException("At least one of the following fields is required; startTs, endTs");
     }
 }

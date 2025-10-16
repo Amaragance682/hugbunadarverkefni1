@@ -65,9 +65,9 @@ public class LocationService {
     }
 
     public void validateLocationPatchRequest(LocationPatchRequestDTO locationPatchRequestDTO) {
-        if (locationPatchRequestDTO.name == null &&
-        locationPatchRequestDTO.address == null) {
-            throw new ValidationException("Either one of name, address or active is required");
+        if ((locationPatchRequestDTO.name == null && !locationPatchRequestDTO.name.isBlank()) &&
+        (locationPatchRequestDTO.address == null && !locationPatchRequestDTO.address.isBlank())) {
+            throw new ValidationException("Either one of name, address or active is required and cannot be blank");
         }
     }
 }

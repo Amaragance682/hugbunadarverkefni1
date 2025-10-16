@@ -96,18 +96,6 @@ public class TaskService {
     }
 
     public TaskDTO addTask(Long companyId, Long locationId, TaskRequestDTO taskRequestDTO) {
-        Task task = _addTask(companyId, taskRequestDTO);
-        Location location = locationRepository.findById(locationId).orElseThrow();
-        task.location = location;
-        Task savedTask = taskRepository.save(task);
-        return taskMapper.toDTO(savedTask);
-    }
-    public TaskDTO addTask(Long companyId, TaskRequestDTO taskRequestDTO) {
-        Task task = _addTask(companyId, taskRequestDTO);
-        Task savedTask = taskRepository.save(task);
-        return taskMapper.toDTO(savedTask);
-    }
-    public Task _addTask(Long companyId, TaskRequestDTO taskRequestDTO) {
         Company company = companyRepository.findById(companyId).orElseThrow();
         Task task = Task.builder()
             .name(taskRequestDTO.name)
@@ -115,7 +103,11 @@ public class TaskService {
             .description(taskRequestDTO.description)
             .isFinished(taskRequestDTO.isFinished)
             .build();
-        return task;
+
+        Location location = locationRepository.findById(locationId).orElseThrow();
+        task.location = location;
+        Task savedTask = taskRepository.save(task);
+        return taskMapper.toDTO(savedTask);
     }
 
     public TaskDTO patchTask(Long taskId, TaskPatchRequestDTO taskPatchRequestDTO) {
