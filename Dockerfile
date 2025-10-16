@@ -5,4 +5,4 @@ RUN mvn clean package -DskipTests
 FROM openjdk:25-jdk-slim
 COPY --from=build /target/clock-in-0.0.1-SNAPSHOT.jar clock-in.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "demo.jar"]
+ENTRYPOINT ["java", "-jar", "clock-in.jar"]
