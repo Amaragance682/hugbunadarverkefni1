@@ -19,7 +19,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,12 +26,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "shift_change_requests")
+@Table(name = "edit_requests")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ShiftChangeRequest {
+public class EditRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;

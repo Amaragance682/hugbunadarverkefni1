@@ -19,4 +19,6 @@ public class TaskRequestDTO {
 
     @Builder.Default
     public Boolean isFinished = false;
+
+    public Long locationId;
 }

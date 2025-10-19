@@ -2,10 +2,8 @@ package com.hugbo.clock_in.domain.entity;
 
 import java.time.Instant;
 import java.util.List;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -64,5 +62,5 @@ public class Shift {
     public List<ShiftFlag> shiftFlags;
 
     @OneToMany(mappedBy = "shift")
-    public List<ShiftChangeRequest> shiftChangeRequests;
+    public List<EditRequest> editRequests;
 }

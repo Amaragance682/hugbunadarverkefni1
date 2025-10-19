@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS shift_change_requests CASCADE^
+DROP TABLE IF EXISTS edit_requests CASCADE^
 DROP TABLE IF EXISTS shift_flags CASCADE^
 DROP TABLE IF EXISTS shift_notes CASCADE^
 DROP TABLE IF EXISTS shift_breaks CASCADE^
@@ -106,7 +106,7 @@ CREATE TABLE shift_flags (
     updated timestamptz not null default current_timestamp
 )^
 
-CREATE TABLE shift_change_requests (
+CREATE TABLE edit_requests (
     id serial primary key,
     shift_id int references shifts(id) not null,
     user_id int references users(id) not null,
@@ -203,7 +203,7 @@ CREATE TRIGGER shift_breaks_audit_trigger
     AFTER INSERT OR UPDATE OR DELETE ON shift_breaks
     FOR EACH ROW
     EXECUTE FUNCTION audit_trigger()^
-CREATE TRIGGER shift_change_requests_audit_trigger
-    AFTER INSERT OR UPDATE OR DELETE ON shift_change_requests
+CREATE TRIGGER edit_requests_audit_trigger
+    AFTER INSERT OR UPDATE OR DELETE ON edit_requests
     FOR EACH ROW
     EXECUTE FUNCTION audit_trigger()^

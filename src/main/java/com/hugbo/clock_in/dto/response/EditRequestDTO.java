@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ShiftChangeRequestDTO {
+public class EditRequestDTO {
     public Long id;
     public ShiftDTO shift;
     public UserDTO user;

@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.hugbo.clock_in.SpecificationUtils;
 import com.hugbo.clock_in.domain.entity.Company;
 import com.hugbo.clock_in.domain.entity.Location;
 import com.hugbo.clock_in.domain.entity.Task;
+import com.hugbo.clock_in.dto.filters.TaskFilterDTO;
 import com.hugbo.clock_in.dto.request.TaskPatchRequestDTO;
 import com.hugbo.clock_in.dto.request.TaskRequestDTO;
 import com.hugbo.clock_in.dto.response.TaskDTO;
@@ -31,63 +33,9 @@ public class TaskService {
     @Autowired
     private LocationRepository locationRepository;
 
-    public List<TaskDTO> getTasks() {
-        Specification<Task> spec = Specification.unrestricted();
-        return getTasks(spec);
-    }
-    /*
-    public List<TaskDTO> getTasks(Long companyId) {
-        Specification<Task> spec = Specification.unrestricted();
+    public List<TaskDTO> getTasks(TaskFilterDTO taskFilterDTO) {
+        Specification<Task> spec = SpecificationUtils.fromFilter(taskFilterDTO);
 
-        spec = spec.and((root, _, cb) -> 
-            cb.equal(root.get("company").get("id"), companyId));
-
-        return getTasks(spec);
-    }
-    public List<TaskDTO> getTasks(Long companyId, Long locationId) {
-        Specification<Task> spec = Specification.unrestricted();
-
-        spec = spec.and((root, _, cb) -> cb.and(
-            cb.or(
-                cb.equal(root.get("location").get("id"), locationId),
-                cb.isNull(root.get("location"))
-            ),
-            cb.equal(root.get("company").get("id"), companyId)
-        ));
-
-        return getTasks(spec);
-    }
-    */
-    public List<TaskDTO> getTasks(Long companyId, Long locationId, Boolean finished, Boolean global) {
-        Specification<Task> spec = Specification.unrestricted();
-
-        if (companyId != null) {
-            spec = spec.and((root, _, cb) ->
-                cb.equal(root.get("company").get("id"), companyId));
-        }
-        if (locationId != null) {
-            spec = spec.and((root, _, cb) ->
-                cb.or(
-                    cb.equal(root.get("location").get("id"), locationId),
-                    cb.isNull(root.get("location"))
-                ));
-        }
-        if (finished != null) {
-            spec = spec.and((root, _, cb) ->
-                    cb.equal(root.get("isFinished"), finished));
-        }
-        if (global != null) {
-            spec = spec.and((root, _, cb) ->
-                global
-                    ? cb.isNull(root.get("location"))
-                    : cb.isNotNull(root.get("location"))
-            );
-        }
-
-        return getTasks(spec);
-    }
-
-    private List<TaskDTO> getTasks(Specification<Task> spec) {
         List<Task> tasks = taskRepository.findAll(spec);
         return tasks
             .stream()
@@ -95,17 +43,18 @@ public class TaskService {
             .toList();
     }
 
-    public TaskDTO addTask(Long companyId, Long locationId, TaskRequestDTO taskRequestDTO) {
+    public TaskDTO addTask(Long companyId, TaskRequestDTO taskRequestDTO) {
         Company company = companyRepository.findById(companyId).orElseThrow();
+        Location location = locationRepository.findById(taskRequestDTO.locationId).orElseThrow();
+
         Task task = Task.builder()
             .name(taskRequestDTO.name)
             .company(company)
             .description(taskRequestDTO.description)
             .isFinished(taskRequestDTO.isFinished)
+            .location(location)
             .build();
 
-        Location location = locationRepository.findById(locationId).orElseThrow();
-        task.location = location;
         Task savedTask = taskRepository.save(task);
         return taskMapper.toDTO(savedTask);
     }

@@ -3,10 +3,13 @@ package com.hugbo.clock_in.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.hugbo.clock_in.SpecificationUtils;
 import com.hugbo.clock_in.domain.entity.Company;
 import com.hugbo.clock_in.domain.entity.Location;
+import com.hugbo.clock_in.dto.filters.LocationFilterDTO;
 import com.hugbo.clock_in.dto.request.LocationPatchRequestDTO;
 import com.hugbo.clock_in.dto.request.LocationRequestDTO;
 import com.hugbo.clock_in.dto.response.LocationDTO;
@@ -42,6 +45,15 @@ public class LocationService {
         Location savedLocation = locationRepository.save(location);
 
         return locationMapper.toDTO(savedLocation);
+    }
+
+    public List<LocationDTO> getLocations(LocationFilterDTO locationFilterDTO) {
+        Specification<Location> spec = SpecificationUtils.fromFilter(locationFilterDTO);
+        List<Location> locations = locationRepository.findAll(spec);
+        return locations
+            .stream()
+            .map(location -> locationMapper.toDTO(location))
+            .toList();
     }
 
     public LocationDTO patchLocation(Long locationId, LocationPatchRequestDTO locationPatchRequestDTO) {

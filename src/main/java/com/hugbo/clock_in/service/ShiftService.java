@@ -8,12 +8,14 @@ import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.hugbo.clock_in.SpecificationUtils;
 import com.hugbo.clock_in.domain.entity.Contract;
 import com.hugbo.clock_in.domain.entity.Location;
 import com.hugbo.clock_in.domain.entity.Shift;
 import com.hugbo.clock_in.domain.entity.ShiftBreak;
 import com.hugbo.clock_in.domain.entity.ShiftTask;
 import com.hugbo.clock_in.domain.entity.Task;
+import com.hugbo.clock_in.dto.filters.ShiftFilterDTO;
 import com.hugbo.clock_in.dto.request.BreakRequestDTO;
 import com.hugbo.clock_in.dto.request.ShiftPatchRequestDTO;
 import com.hugbo.clock_in.dto.response.ShiftBreakDTO;
@@ -54,43 +56,10 @@ public class ShiftService {
     private TaskRepository taskRepository;
 
     public List<ShiftDTO> getShifts(
-        Long companyId,
-        Long userId,
-        Long locationId, 
-        Long taskId, 
-        Instant from,
-        Instant to,
-        Boolean ongoing
+            ShiftFilterDTO shiftFilterDTO
     ) {
-        Specification<Shift> spec = Specification.unrestricted();
+        Specification<Shift> spec = SpecificationUtils.fromFilter(shiftFilterDTO);
 
-        if (companyId != null) {
-            spec = spec.and((root, _, cb) ->
-                cb.equal(root.get("contract").get("company").get("id"), companyId));
-        }
-        if (userId != null) {
-            spec = spec.and((root, _, cb) ->
-                cb.equal(root.get("contract").get("user").get("id"), userId));
-        }
-        // location and task need to access sub-shift data so save for later
-        if (from != null) {
-            spec = spec.and((root, _, cb) ->
-                cb.greaterThan(root.get("startTs"), from));
-        }
-        if (to != null) {
-            spec = spec.and((root, _, cb) ->
-                cb.lessThan(root.get("endTs"), to));
-        }
-        if (ongoing != null) {
-            spec = spec.and((root, _, cb) ->
-                ongoing
-                    ? cb.isNull(root.get("endTs"))
-                    : cb.isNotNull(root.get("endTs")));
-        }
-        return getShifts(spec);
-    }
-
-    private List<ShiftDTO> getShifts(Specification<Shift> spec) {
         List<Shift> shifts = shiftRepository.findAll(spec);
         return shifts
             .stream()

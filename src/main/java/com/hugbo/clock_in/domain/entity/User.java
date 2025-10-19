@@ -68,10 +68,10 @@ public class User {
     public List<ShiftNote> shiftNotes;
 
     @OneToMany(mappedBy = "user")
-    public List<ShiftChangeRequest> shiftChangeRequests;
+    public List<EditRequest> editRequests;
 
     @OneToMany(mappedBy = "reviewedBy")
-    public List<ShiftChangeRequest> reviewedShiftChangeRequests;
+    public List<EditRequest> reviewedEditRequests;
 
     @OneToMany(mappedBy = "actor")
     public List<AuditLog> auditLogs;

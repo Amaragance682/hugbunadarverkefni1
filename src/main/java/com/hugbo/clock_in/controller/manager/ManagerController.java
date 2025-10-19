@@ -14,11 +14,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hugbo.clock_in.dto.filters.EditRequestFilterDTO;
+import com.hugbo.clock_in.dto.filters.LocationFilterDTO;
+import com.hugbo.clock_in.dto.filters.ShiftFilterDTO;
+import com.hugbo.clock_in.dto.filters.TaskFilterDTO;
 import com.hugbo.clock_in.dto.request.LocationRequestDTO;
 import com.hugbo.clock_in.dto.request.TaskRequestDTO;
+import com.hugbo.clock_in.dto.response.EditRequestDTO;
 import com.hugbo.clock_in.dto.response.LocationDTO;
 import com.hugbo.clock_in.dto.response.ShiftDTO;
 import com.hugbo.clock_in.dto.response.TaskDTO;
+import com.hugbo.clock_in.service.EditRequestService;
 import com.hugbo.clock_in.service.LocationService;
 import com.hugbo.clock_in.service.ShiftService;
 import com.hugbo.clock_in.service.TaskService;
@@ -32,15 +38,16 @@ public class ManagerController {
     private TaskService taskService;
     @Autowired
     private ShiftService shiftService;
+    @Autowired
+    private EditRequestService editRequestService;
 
     @PostMapping("/tasks")
     @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId)")
     public ResponseEntity<?> addTask(
         @PathVariable Long companyId,
-        @PathVariable Long locationId,
         @RequestBody TaskRequestDTO taskRequestDTO
     ) {
-        TaskDTO taskDTO = taskService.addTask(companyId, locationId, taskRequestDTO);
+        TaskDTO taskDTO = taskService.addTask(companyId, taskRequestDTO);
         return ResponseEntity.ok().body(taskDTO);
     }
 
@@ -58,14 +65,39 @@ public class ManagerController {
     @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId)")
     public ResponseEntity<?> getShifts(
         @PathVariable Long companyId,
-        @RequestParam(required = false) Long userId,
-        @RequestParam(required = false) Long locationId, 
-        @RequestParam(required = false) Long taskId, 
-        @RequestParam(required = false) Instant from,
-        @RequestParam(required = false) Instant to,
-        @RequestParam(required = false) Boolean ongoing
+        @RequestBody(required = true) ShiftFilterDTO shiftFilterDTO
     ) {
-        List<ShiftDTO> shiftDTOs = shiftService.getShifts(companyId, userId, locationId, taskId, from, to, ongoing);
+        List<ShiftDTO> shiftDTOs = shiftService.getShifts(shiftFilterDTO);
         return ResponseEntity.ok().body(shiftDTOs);
+    }
+
+    @GetMapping("/locations")
+    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId)")
+    public ResponseEntity<?> getLocations(
+        @PathVariable Long companyId,
+        @RequestBody(required = true) LocationFilterDTO locationFilterDTO
+    ) {
+        List<LocationDTO> locationDTOs = locationService.getLocations(locationFilterDTO);
+        return ResponseEntity.ok().body(locationDTOs);
+    }
+
+    @GetMapping("/tasks")
+    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId)")
+    public ResponseEntity<?> getTasks(
+        @PathVariable Long companyId,
+        @RequestBody(required = true) TaskFilterDTO taskFilterDTO
+    ) {
+        List<TaskDTO> taskDTOs = taskService.getTasks(taskFilterDTO);
+        return ResponseEntity.ok().body(taskDTOs);
+    }
+
+    @GetMapping("/edit-requests")
+    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId)")
+    public ResponseEntity<?> getEditRequests(
+        @PathVariable Long companyId,
+        @RequestBody(required = true) EditRequestFilterDTO editRequestFilterDTO
+    ) {
+        List<EditRequestDTO> editRequestDTOs = editRequestService.getEditRequests(editRequestFilterDTO);
+        return ResponseEntity.ok().body(editRequestDTOs);
     }
 }
