@@ -51,3 +51,5 @@ That means UC1, UC2, UC3, UC4, UC5, UC6, UC7, UC9 and UC11
 Last use cases and testing + fine-tuning will be handled next sprint, and we expect to be able to handle that quite well, seeing the progress made this sprint.
 
 Ragnar has handled code aggregation for the team and have made sure the code is in accordance with the standards we set for outselves, being the P.O. for this sprint.
+
+The project plan has been slightly altered, now including UC11 for user registration and login, seeing as that was missing and only mentioned in a context where it was implied to exist. It can now be accessed in "Project Plan.pdf" in the root folder
