@@ -29,8 +29,6 @@ public class CompanyController {
     @Autowired
     private CompanyService companyService;
     @Autowired
-    private SecurityService securityService;
-    @Autowired
     private ContractService contractService;
 
     @GetMapping
