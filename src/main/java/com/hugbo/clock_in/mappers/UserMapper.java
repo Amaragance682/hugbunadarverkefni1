@@ -9,11 +9,11 @@ import com.hugbo.clock_in.dto.response.UserDTO;
 public class UserMapper {
     public UserDTO toDTO(User user) {
         if (user == null) return null;
-        return new UserDTO(
-						user.id,
-						user.name,
-						user.email,
-						user.admin
-						);
+        return UserDTO.builder()
+            .id(user.id)
+            .name(user.name)
+            .email(user.email)
+            .admin(user.admin)
+            .build();
     }
 }
