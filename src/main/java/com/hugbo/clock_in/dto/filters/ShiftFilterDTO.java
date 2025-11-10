@@ -4,14 +4,19 @@ import java.time.Instant;
 
 import com.hugbo.clock_in.FilterPath;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ShiftFilterDTO {
     @FilterPath("contract.id")
     public Long contractId;
 
     @FilterPath("contract.user.id")
     public Long userId;
-
-    //public Long taskId;   <-- not doing this no way no way
 
     @FilterPath("contract.company.id")
     public Long companyId;

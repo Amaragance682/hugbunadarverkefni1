@@ -1,25 +1,17 @@
-package com.hugbo.clock_in.dto.response;
+package com.hugbo.clock_in.dto.request;
 
-import java.time.Duration;
 import java.time.Instant;
 
 import com.hugbo.clock_in.TimeRange;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class ShiftBreakDTO implements TimeRange {
+public class ShiftTaskPatchRequestDTO implements TimeRange {
+    @NotBlank
     public Long id;
-    public Long shiftId;
-    public String breakType;
     public Instant startTs;
     public Instant endTs;
+    public Long taskId;
     public Instant getStartTs() {
         return startTs;
     }

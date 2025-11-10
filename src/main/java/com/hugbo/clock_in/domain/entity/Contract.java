@@ -2,6 +2,7 @@ package com.hugbo.clock_in.domain.entity;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.CreationTimestamp;
@@ -73,5 +74,12 @@ public class Contract {
     }
     public Role getRole() {
         return role;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Contract other)) return false;
+        return Objects.equals(this.id, other.id);
     }
 }

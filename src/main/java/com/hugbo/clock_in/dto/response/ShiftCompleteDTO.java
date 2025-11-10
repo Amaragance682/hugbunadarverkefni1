@@ -11,5 +11,6 @@ public class ShiftCompleteDTO {
     public ShiftDTO shift;
     public List<ShiftTaskDTO> shiftTasks;
     public List<ShiftBreakDTO> shiftBreaks;
+    public List<EditRequestDTO> editRequests;
     // and so on
 }

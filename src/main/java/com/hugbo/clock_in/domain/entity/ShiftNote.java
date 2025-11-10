@@ -1,6 +1,7 @@
 package com.hugbo.clock_in.domain.entity;
 
 import java.time.Instant;
+import java.util.Objects;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -51,4 +52,10 @@ public class ShiftNote {
     @UpdateTimestamp
     @Column(nullable = false)
     public Instant updated;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ShiftNote other)) return false;
+        return Objects.equals(this.id, other.id);
+    }
 }

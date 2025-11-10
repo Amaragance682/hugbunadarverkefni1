@@ -1,6 +1,7 @@
 package com.hugbo.clock_in.domain.entity;
 
 import java.time.Instant;
+import java.util.Objects;
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.CreationTimestamp;
@@ -73,4 +74,11 @@ public class EditRequest {
     @UpdateTimestamp
     @Column(nullable = false)
     public Instant updated;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EditRequest other)) return false;
+        return Objects.equals(this.id, other.id);
+    }
 }

@@ -2,6 +2,7 @@ package com.hugbo.clock_in.domain.entity;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -65,4 +66,11 @@ public class Location {
 
     @OneToMany(mappedBy = "location")
     public List<Task> tasks;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Location other)) return false;
+        return Objects.equals(this.id, other.id);
+    }
 }

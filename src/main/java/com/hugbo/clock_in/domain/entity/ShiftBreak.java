@@ -1,10 +1,13 @@
 package com.hugbo.clock_in.domain.entity;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.time.Duration;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import com.hugbo.clock_in.TimeRange;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,7 +30,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ShiftBreak {
+public class ShiftBreak implements TimeRange {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
@@ -54,4 +57,23 @@ public class ShiftBreak {
     @UpdateTimestamp
     @Column(nullable = false)
     public Instant updated;
+
+    public Instant getStartTs() {
+        return startTs;
+    }
+    public Instant getEndTs() {
+        return endTs;
+    }
+    public void setStartTs(Instant i) {
+        startTs = i;
+    }
+    public void setEndTs(Instant i) {
+        endTs = i;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ShiftBreak other)) return false;
+        return Objects.equals(this.id, other.id);
+    }
 }

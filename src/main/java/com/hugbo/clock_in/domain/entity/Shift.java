@@ -2,8 +2,14 @@ package com.hugbo.clock_in.domain.entity;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.hugbo.clock_in.TimeRange;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,7 +31,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Shift {
+public class Shift implements TimeRange {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
@@ -50,9 +56,11 @@ public class Shift {
     public Instant updated;
 
     @OneToMany(mappedBy = "shift")
+    @JsonIgnore
     public List<ShiftTask> shiftTasks;
 
     @OneToMany(mappedBy = "shift")
+    @JsonIgnore
     public List<ShiftBreak> shiftBreaks;
 
     @OneToMany(mappedBy = "shift")
@@ -63,4 +71,17 @@ public class Shift {
 
     @OneToMany(mappedBy = "shift")
     public List<EditRequest> editRequests;
+
+    public Instant getStartTs() {
+        return startTs;
+    }
+    public Instant getEndTs() {
+        return endTs;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Shift other)) return false;
+        return Objects.equals(this.id, other.id);
+    }
 }

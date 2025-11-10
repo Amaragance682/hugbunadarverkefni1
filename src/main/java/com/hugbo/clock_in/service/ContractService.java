@@ -37,4 +37,9 @@ public class ContractService {
 
         return contractMapper.toDTO(savedContract);
     }
+
+    public ContractDTO findByUserAndCompanyId(Long userId, Long companyId) {
+        Contract contract = contractRepository.findByUserIdAndCompanyId(userId, companyId).orElseThrow();
+        return contractMapper.toDTO(contract);
+    }
 }
