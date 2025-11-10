@@ -78,6 +78,12 @@ public class Shift implements TimeRange {
     public Instant getEndTs() {
         return endTs;
     }
+    public void setStartTs(Instant i) {
+        startTs = i;
+    }
+    public void setEndTs(Instant i) {
+        endTs = i;
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
