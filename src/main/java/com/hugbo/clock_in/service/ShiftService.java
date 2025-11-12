@@ -451,7 +451,7 @@ public class ShiftService {
         }
 
         for (int i = 1; i < timeline.size(); i++) {
-            if (timeline.get(i)._1() != timeline.get(i-1)._2())
+            if (!timeline.get(i)._1().equals(timeline.get(i-1)._2()))
                 throw new ValidationException("There must be no gaps in the timeline of shift tasks provided");
         }
     }

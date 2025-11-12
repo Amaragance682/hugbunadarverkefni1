@@ -19,6 +19,7 @@ INSERT INTO locations (company_id, name, address, created, updated) VALUES (1, '
 
 -- TASKS
 INSERT INTO tasks (company_id, location_id, name, description, is_finished, created, updated) VALUES (1, 1, 'sample_task', 'this is a sample task', false, current_timestamp, current_timestamp);
+INSERT INTO tasks (company_id, location_id, name, description, is_finished, created, updated) VALUES (1, 1, 'sample_task2', 'second task to switch to', false, current_timestamp, current_timestamp);
 
 -- SHIFTS
 INSERT INTO shifts (contract_id, start_ts, end_ts)
@@ -26,6 +27,6 @@ VALUES (1, '2025-11-12T00:10:00.000Z', '2025-11-12T00:21:00.000Z');
 INSERT INTO shift_tasks (shift_id, task_id, start_ts, end_ts)
 VALUES (1, 1, '2025-11-12T00:10:00.000Z', '2025-11-12T00:15:00.000Z');
 INSERT INTO shift_tasks (shift_id, task_id, start_ts, end_ts)
-VALUES (1, 1, '2025-11-12T00:15:00.000Z', '2025-11-12T00:21:00.000Z');
+VALUES (1, 2, '2025-11-12T00:15:00.000Z', '2025-11-12T00:21:00.000Z');
 INSERT INTO shift_breaks (shift_id, break_type, start_ts, end_ts)
 VALUES (1, 'Lunch', '2025-11-12T00:12:00.000Z', '2025-11-12T00:13:00.000Z');
