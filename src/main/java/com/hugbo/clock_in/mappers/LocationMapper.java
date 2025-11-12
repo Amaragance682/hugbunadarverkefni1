@@ -27,4 +27,13 @@ public class LocationMapper {
             .build();
         return location;
     }
+
+    public Location fromDTO(LocationDTO locationDTO) {
+        if (locationDTO == null) return null;
+        return Location.builder()
+            .id(locationDTO.id)
+            .name(locationDTO.name)
+            .address(locationDTO.address)
+            .build();
+    }
 }

@@ -22,4 +22,14 @@ public class ContractMapper {
             contract.role
         );
     }
+    public Contract fromDTO(ContractDTO contractDTO) {
+        if (contractDTO == null) return null;
+        return Contract.builder()
+            .id(contractDTO.id)
+            .user(userMapper.fromDTO(contractDTO.user))
+            .company(companyMapper.fromDTO(contractDTO.company))
+            .contractSettings(contractDTO.contractSettings)
+            .role(contractDTO.role)
+            .build();
+    }
 }

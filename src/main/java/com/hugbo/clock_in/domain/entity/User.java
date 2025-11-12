@@ -54,11 +54,13 @@ public class User {
     public Boolean admin = false;
 
     @CreationTimestamp
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false,
+    columnDefinition = "timestamptz default current_timestamp")
     public Instant created;
 
     @UpdateTimestamp
-    @Column(nullable = false)
+    @Column(nullable = false,
+    columnDefinition = "timestamptz default current_timestamp")
     public Instant updated;
 
     // TODO! add default empty list for all OneToMany relations

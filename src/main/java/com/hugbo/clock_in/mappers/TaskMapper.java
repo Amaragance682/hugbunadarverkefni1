@@ -24,4 +24,15 @@ public class TaskMapper {
             task.isFinished
         );
     }
+    public Task fromDTO(TaskDTO taskDTO) {
+        if (taskDTO == null) return null;
+        return Task.builder()
+            .id(taskDTO.id)
+            .company(companyMapper.fromDTO(taskDTO.company))
+            .location(locationMapper.fromDTO(taskDTO.location))
+            .name(taskDTO.name)
+            .description(taskDTO.description)
+            .isFinished(taskDTO.isFinished)
+            .build();
+    }
 }

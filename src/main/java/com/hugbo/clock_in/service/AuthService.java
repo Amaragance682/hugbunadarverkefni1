@@ -1,5 +1,7 @@
 package com.hugbo.clock_in.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -8,6 +10,7 @@ import com.hugbo.clock_in.domain.entity.User;
 import com.hugbo.clock_in.dto.auth.AuthRequestDTO;
 import com.hugbo.clock_in.dto.auth.AuthResponseDTO;
 import com.hugbo.clock_in.dto.auth.RegisterRequestDTO;
+import com.hugbo.clock_in.dto.response.UserDTO;
 import com.hugbo.clock_in.exception.AuthenticationException;
 import com.hugbo.clock_in.mappers.UserMapper;
 import com.hugbo.clock_in.repository.UserRepository;
@@ -71,5 +74,9 @@ public class AuthService {
         } catch (Exception e) {
             throw new AuthenticationException(e.getMessage());
         }
+    }
+
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll().stream().map(user -> userMapper.toDTO(user)).toList();
     }
 }

@@ -33,6 +33,9 @@ public class TaskService {
     @Autowired
     private LocationRepository locationRepository;
 
+    public List<TaskDTO> getAllTasks() {
+        return getTasks(new TaskFilterDTO());
+    }
     public List<TaskDTO> getTasks(TaskFilterDTO taskFilterDTO) {
         Specification<Task> spec = SpecificationUtils.fromFilter(taskFilterDTO);
 

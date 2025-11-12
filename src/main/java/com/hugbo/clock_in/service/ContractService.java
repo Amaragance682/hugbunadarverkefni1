@@ -1,5 +1,7 @@
 package com.hugbo.clock_in.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,5 +43,9 @@ public class ContractService {
     public ContractDTO findByUserAndCompanyId(Long userId, Long companyId) {
         Contract contract = contractRepository.findByUserIdAndCompanyId(userId, companyId).orElseThrow();
         return contractMapper.toDTO(contract);
+    }
+
+    public List<ContractDTO> getAllContracts() {
+        return contractRepository.findAll().stream().map(c -> contractMapper.toDTO(c)).toList();
     }
 }

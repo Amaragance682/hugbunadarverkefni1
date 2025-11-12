@@ -16,4 +16,13 @@ public class UserMapper {
             .admin(user.admin)
             .build();
     }
+    public User fromDTO(UserDTO userDTO) {
+        if (userDTO == null) return null;
+        return User.builder()
+            .id(userDTO.id)
+            .name(userDTO.name)
+            .email(userDTO.email)
+            .admin(userDTO.admin)
+            .build();
+    }
 }

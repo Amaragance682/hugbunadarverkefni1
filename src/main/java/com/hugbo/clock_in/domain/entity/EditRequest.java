@@ -39,11 +39,6 @@ public class EditRequest {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "shift_id", nullable = false)
-    public Shift shift;
-
-    @NotNull
-    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     public User user;
 
@@ -68,11 +63,13 @@ public class EditRequest {
     public Instant reviewedAt;
 
     @CreationTimestamp
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false,
+    columnDefinition = "timestamptz default current_timestamp")
     public Instant created;
 
     @UpdateTimestamp
-    @Column(nullable = false)
+    @Column(nullable = false,
+    columnDefinition = "timestamptz default current_timestamp")
     public Instant updated;
 
     @Override

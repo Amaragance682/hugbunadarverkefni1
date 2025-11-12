@@ -4,7 +4,11 @@ import java.time.Instant;
 import java.util.Objects;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,6 +39,8 @@ public class ShiftFlag {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "shift_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
     public Shift shift;
 
     @NotBlank
@@ -46,11 +52,13 @@ public class ShiftFlag {
     public String value;
 
     @CreationTimestamp
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false,
+    columnDefinition = "timestamptz default current_timestamp")
     public Instant created;
 
     @UpdateTimestamp
-    @Column(nullable = false)
+    @Column(nullable = false,
+    columnDefinition = "timestamptz default current_timestamp")
     public Instant updated;
 
     @Override

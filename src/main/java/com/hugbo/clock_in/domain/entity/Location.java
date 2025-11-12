@@ -57,11 +57,13 @@ public class Location {
     public String address;
 
     @CreationTimestamp
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false,
+    columnDefinition = "timestamptz default current_timestamp")
     public Instant created;
 
     @UpdateTimestamp
-    @Column(nullable = false)
+    @Column(nullable = false,
+    columnDefinition = "timestamptz default current_timestamp")
     public Instant updated;
 
     @OneToMany(mappedBy = "location")

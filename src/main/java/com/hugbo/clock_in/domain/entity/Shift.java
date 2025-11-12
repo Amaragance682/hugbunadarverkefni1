@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -48,19 +49,19 @@ public class Shift implements TimeRange {
     public Instant endTs;
 
     @CreationTimestamp
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false,
+    columnDefinition = "timestamptz default current_timestamp")
     public Instant created;
 
     @UpdateTimestamp
-    @Column(nullable = false)
+    @Column(nullable = false,
+    columnDefinition = "timestamptz default current_timestamp")
     public Instant updated;
 
     @OneToMany(mappedBy = "shift")
-    @JsonIgnore
     public List<ShiftTask> shiftTasks;
 
     @OneToMany(mappedBy = "shift")
-    @JsonIgnore
     public List<ShiftBreak> shiftBreaks;
 
     @OneToMany(mappedBy = "shift")
@@ -68,9 +69,6 @@ public class Shift implements TimeRange {
 
     @OneToMany(mappedBy = "shift")
     public List<ShiftFlag> shiftFlags;
-
-    @OneToMany(mappedBy = "shift")
-    public List<EditRequest> editRequests;
 
     public Instant getStartTs() {
         return startTs;

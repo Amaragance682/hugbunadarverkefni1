@@ -20,4 +20,11 @@ public class CompanyMapper {
 
         return company;
     }
+    public Company fromDTO(CompanyDTO companyDTO) {
+        if (companyDTO == null) return null;
+        return Company.builder()
+            .id(companyDTO.id)
+            .name(companyDTO.name)
+            .build();
+    }
 }

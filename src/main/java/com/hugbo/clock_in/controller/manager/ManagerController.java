@@ -1,8 +1,6 @@
 package com.hugbo.clock_in.controller.manager;
 
-import java.time.Instant;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,7 +27,6 @@ import com.hugbo.clock_in.dto.request.TaskRequestDTO;
 import com.hugbo.clock_in.dto.response.EditRequestDTO;
 import com.hugbo.clock_in.dto.response.LocationDTO;
 import com.hugbo.clock_in.dto.response.ShiftCompleteDTO;
-import com.hugbo.clock_in.dto.response.ShiftDTO;
 import com.hugbo.clock_in.dto.response.TaskDTO;
 import com.hugbo.clock_in.service.EditRequestService;
 import com.hugbo.clock_in.service.LocationService;
@@ -52,17 +49,23 @@ public class ManagerController {
     //        SHIFTS
     // *********************
     @GetMapping("/shifts")
-    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId)")
+    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId) or hasRole('ADMIN')")
     public ResponseEntity<?> getShifts(
         @PathVariable Long companyId,
+        @RequestParam boolean isOngoing,
         @RequestBody(required = true) ShiftFilterDTO shiftFilterDTO
     ) {
         List<ShiftCompleteDTO> shiftDTOs = shiftService.getShifts(shiftFilterDTO);
+        if (isOngoing)
+            shiftDTOs = shiftDTOs
+                .stream()
+                .filter(s -> s.shift.endTs == null)
+                .toList();
         return ResponseEntity.ok().body(shiftDTOs);
     }
 
     @PatchMapping("/shifts/{shiftId}")
-    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId)")
+    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId) or hasRole('ADMIN')")
     public ResponseEntity<?> patchShift(
         @PathVariable Long companyId,
         @PathVariable Long shiftId,
@@ -76,7 +79,7 @@ public class ManagerController {
     //       LOCATIONS
     // *********************
     @GetMapping("/locations")
-    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId)")
+    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId) or hasRole('ADMIN')")
     public ResponseEntity<?> getLocations(
         @PathVariable Long companyId,
         @RequestBody(required = true) LocationFilterDTO locationFilterDTO
@@ -86,7 +89,7 @@ public class ManagerController {
     }
 
     @PostMapping("/locations")
-    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId)")
+    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId) or hasRole('ADMIN')")
     public ResponseEntity<?> addLocation(
         @PathVariable Long companyId,
         @RequestBody LocationRequestDTO locationRequestDTO
@@ -96,7 +99,7 @@ public class ManagerController {
     }
 
     @PatchMapping("/locations/{locationId}")
-    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId)")
+    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId) or hasRole('ADMIN')")
     public ResponseEntity<?> patchLocation(
         @PathVariable Long companyId,
         @PathVariable Long locationId,
@@ -107,7 +110,7 @@ public class ManagerController {
     }
 
     @DeleteMapping("/locations/{locationId}")
-    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId)")
+    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId) or hasRole('ADMIN')")
     public ResponseEntity<?> deleteLocation(
         @PathVariable Long companyId,
         @PathVariable Long locationId
@@ -120,7 +123,7 @@ public class ManagerController {
     //         TASKS
     // *********************
     @GetMapping("/tasks")
-    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId)")
+    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId) or hasRole('ADMIN')")
     public ResponseEntity<?> getTasks(
         @PathVariable Long companyId,
         @RequestBody(required = true) TaskFilterDTO taskFilterDTO
@@ -130,7 +133,7 @@ public class ManagerController {
     }
 
     @PostMapping("/tasks")
-    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId)")
+    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId) or hasRole('ADMIN')")
     public ResponseEntity<?> addTask(
         @PathVariable Long companyId,
         @RequestBody TaskRequestDTO taskRequestDTO
@@ -140,7 +143,7 @@ public class ManagerController {
     }
 
     @PatchMapping("/tasks/{taskId}")
-    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId)")
+    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId) or hasRole('ADMIN')")
     public ResponseEntity<?> patchTask(
         @PathVariable Long companyId,
         @PathVariable Long taskId,
@@ -151,7 +154,7 @@ public class ManagerController {
     }
 
     @DeleteMapping("/tasks/{taskId}")
-    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId)")
+    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId) or hasRole('ADMIN')")
     public ResponseEntity<?> deleteTask(
         @PathVariable Long companyId,
         @PathVariable Long taskId
@@ -164,7 +167,7 @@ public class ManagerController {
     //     EDIT REQUESTS
     // *********************
     @GetMapping("/edit-requests")
-    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId)")
+    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId) or hasRole('ADMIN')")
     public ResponseEntity<?> getEditRequests(
         @PathVariable Long companyId,
         @RequestBody(required = true) EditRequestFilterDTO editRequestFilterDTO
@@ -174,7 +177,7 @@ public class ManagerController {
     }
 
     @PatchMapping("/edit-requests/{editRequestId}")
-    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId)")
+    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId) or hasRole('ADMIN')")
     public ResponseEntity<?> patchEditRequest(
         @PathVariable Long companyId,
         @PathVariable Long editRequestId,
@@ -182,5 +185,15 @@ public class ManagerController {
     ) {
         EditRequestDTO editRequestDTO = editRequestService.patchEditRequest(editRequestPatchRequestDTO, editRequestId);
         return ResponseEntity.ok().body(editRequestDTO);
+    }
+
+    @PostMapping("/edit-requests/{editRequestId}/apply")
+    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId) or hasRole('ADMIN')")
+    public ResponseEntity<?> applyEditRequest(
+        @PathVariable Long companyId,
+        @PathVariable Long editRequestId
+    ) {
+        ShiftCompleteDTO shiftCompleteDTO = editRequestService.applyEditRequest(editRequestId);
+        return ResponseEntity.ok().body(shiftCompleteDTO);
     }
 }

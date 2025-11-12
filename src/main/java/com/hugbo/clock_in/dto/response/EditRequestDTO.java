@@ -2,8 +2,8 @@ package com.hugbo.clock_in.dto.response;
 
 import java.time.Instant;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.hugbo.clock_in.domain.entity.Status;
+import com.hugbo.clock_in.dto.request.ShiftRequestDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,10 +16,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class EditRequestDTO {
     public Long id;
-    public ShiftDTO shift;
     public UserDTO user;
     public String reason;
-    public JsonNode requestedChanges;
+    public ShiftRequestDTO requestedChanges;
     @Builder.Default
     public Status status = Status.PENDING;
     public UserDTO reviewedBy;

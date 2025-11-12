@@ -52,7 +52,6 @@ public class ShiftService {
     private ShiftTaskRepository shiftTaskRepository;
     @Autowired
     private ShiftBreakRepository shiftBreakRepository;
-
     @Autowired
     private ShiftMapper shiftMapper;
     @Autowired
@@ -73,9 +72,10 @@ public class ShiftService {
         Specification<Shift> spec = SpecificationUtils.fromFilter(shiftFilterDTO);
 
         List<Shift> shifts = shiftRepository.findAll(spec);
+
         return shifts
             .stream()
-            .map(shift -> createCompleteShiftDTO(shift))
+            .map(shift -> shiftMapper.createCompleteShiftDTO(shift))
             .toList();
     }
 
@@ -96,11 +96,11 @@ public class ShiftService {
             .toList();
     }
 
-    public List<ShiftDTO> getOngoingShiftsByCompany(Long companyId) {
+    public List<ShiftCompleteDTO> getOngoingShiftsByCompany(Long companyId) {
         return shiftRepository
             .findOngoingShiftsByCompany(companyId)
             .stream()
-            .map(shift -> shiftMapper.toDTO(shift))
+            .map(shift -> shiftMapper.createCompleteShiftDTO(shift))
             .toList();
     }
 
@@ -117,7 +117,7 @@ public class ShiftService {
         newShiftTask.setStartTs(now);
         shiftTaskRepository.save(newShiftTask);
 
-        return createCompleteShiftDTO(newShift);
+        return shiftMapper.createCompleteShiftDTO(newShift);
     }
 
     public ShiftCompleteDTO clockOut(Long userId, Long companyId) {
@@ -142,7 +142,7 @@ public class ShiftService {
         Shift newShift = shiftRepository.save(shift);
         shiftTaskRepository.save(shiftTask);
 
-        return createCompleteShiftDTO(newShift);
+        return shiftMapper.createCompleteShiftDTO(newShift);
     }
 
     public ShiftCompleteDTO switchTask(Long userId, Long companyId, Long newTaskId) {
@@ -162,7 +162,7 @@ public class ShiftService {
         newShiftTask.setStartTs(now);
         shiftTaskRepository.save(newShiftTask);
 
-        return createCompleteShiftDTO(shift);
+        return shiftMapper.createCompleteShiftDTO(shift);
     }
 
     public ShiftCompleteDTO startBreak(Long userId, Long companyId, BreakRequestDTO breakRequestDTO) {
@@ -176,7 +176,7 @@ public class ShiftService {
 
         ShiftBreak newShiftBreak = createShiftBreak(shift, breakRequestDTO);
         shiftBreakRepository.save(newShiftBreak);
-        return createCompleteShiftDTO(shift);
+        return shiftMapper.createCompleteShiftDTO(shift);
     }
     public ShiftCompleteDTO endBreak(Long userId, Long companyId) {
         Shift shift = shiftRepository.findCurrentShift(userId, companyId)
@@ -190,7 +190,7 @@ public class ShiftService {
         shiftBreak.endTs = Instant.now();
         shiftBreakRepository.save(shiftBreak);
 
-        return createCompleteShiftDTO(shift);
+        return shiftMapper.createCompleteShiftDTO(shift);
     }
 
     public Shift createShift(Long userId, Long companyId, Long taskId) {
@@ -219,35 +219,9 @@ public class ShiftService {
         return newShiftBreak;
     }
 
-    private ShiftCompleteDTO createCompleteShiftDTO(Shift shift) {
-        ShiftDTO shiftDTO = shiftMapper.toDTO(shift);
-        List<ShiftBreak> shiftBreaks = shift.shiftBreaks;
-        List<ShiftTask> shiftTasks = shift.shiftTasks;
-        List<EditRequest> editRequests = shift.editRequests;
-        List<ShiftBreakDTO> shiftBreakDTOs = shiftBreaks != null ? shiftBreaks
-            .stream()
-            .map(shiftBreak -> shiftBreakMapper.toDTO(shiftBreak))
-            .toList() : List.of();
-        List<ShiftTaskDTO> shiftTaskDTOs = shiftTasks != null ? shiftTasks
-            .stream()
-            .map(shiftTask -> shiftTaskMapper.toDTO(shiftTask))
-            .toList() : List.of();
-        List<EditRequestDTO> editRequestDTOs = editRequests != null ? editRequests
-            .stream()
-            .map(editRequest -> editRequestMapper.toDTO(editRequest))
-            .toList() : List.of();
-
-        return new ShiftCompleteDTO(
-            shiftDTO,
-            shiftTaskDTOs,
-            shiftBreakDTOs,
-            editRequestDTOs
-        );
-    }
-
     public ShiftCompleteDTO patchShift(Long shiftId, ShiftPatchRequestDTO requestDTO) {
         Shift shift = shiftRepository.findById(shiftId).orElseThrow();
-        validateShiftPatchRequest(requestDTO, createCompleteShiftDTO(shift));
+        validateShiftPatchRequest(requestDTO, shiftMapper.createCompleteShiftDTO(shift));
 
         Instant startTs = requestDTO.startTs;
         Instant endTs = requestDTO.endTs;
@@ -286,7 +260,7 @@ public class ShiftService {
         for (ShiftBreak shiftBreak : savedShift.shiftBreaks)
             shiftBreakRepository.save(shiftBreak);
 
-        return createCompleteShiftDTO(shift);
+        return shiftMapper.createCompleteShiftDTO(shift);
         // ALSO CREATE AND ADD SHIFT NOTE
     }
 

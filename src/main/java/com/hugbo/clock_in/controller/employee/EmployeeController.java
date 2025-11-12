@@ -117,7 +117,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/shifts")
-    @PreAuthorize("@securityService.isCompanyEmployee(authentication.principal.id, #companyId)")
+    @PreAuthorize("@securityService.isCompanyEmployeeOrManager(authentication.principal.id, #companyId) or hasRole('ADMIN')")
     public ResponseEntity<?> getShifts(
         @PathVariable Long companyId,
         @AuthenticationPrincipal CustomUserDetails customUserDetails,

@@ -5,8 +5,11 @@ import java.util.Objects;
 import java.time.Duration;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hugbo.clock_in.TimeRange;
 
 import jakarta.persistence.Column;
@@ -38,6 +41,8 @@ public class ShiftBreak implements TimeRange {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "shift_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
     public Shift shift;
 
     @NotBlank
@@ -51,11 +56,13 @@ public class ShiftBreak implements TimeRange {
     public Instant endTs;
 
     @CreationTimestamp
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false,
+    columnDefinition = "timestamptz default current_timestamp")
     public Instant created;
 
     @UpdateTimestamp
-    @Column(nullable = false)
+    @Column(nullable = false,
+    columnDefinition = "timestamptz default current_timestamp")
     public Instant updated;
 
     public Instant getStartTs() {

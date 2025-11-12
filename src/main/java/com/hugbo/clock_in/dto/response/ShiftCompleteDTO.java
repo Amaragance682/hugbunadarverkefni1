@@ -11,6 +11,5 @@ public class ShiftCompleteDTO {
     public ShiftDTO shift;
     public List<ShiftTaskDTO> shiftTasks = List.of();
     public List<ShiftBreakDTO> shiftBreaks = List.of();
-    public List<EditRequestDTO> editRequests = List.of();
     // and so on
 }
