@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.hugbo.clock_in.AuditableEntity;
 import com.hugbo.clock_in.domain.entity.AuditLog;
 import com.hugbo.clock_in.dto.response.AuditLogDTO;
 import com.hugbo.clock_in.mappers.AuditLogMapper;
@@ -34,30 +32,42 @@ public class AuditLogService {
     }
 
     public List<AuditLogDTO> getAuditLogs(Long companyId, String entityType) {
-        AuditableEntity ae = AuditableEntity.fromString(entityType)
-            .orElseThrow(() -> new IllegalArgumentException("Invalid entity type requested"));
+        String sql;
 
-        String sql = "SELECT a.* FROM audit_log a " +
-            "JOIN " + ae.tableName + " t " +
-            "ON a.entity_id = t." + ae.tableJoinColumn + " " +
-            "WHERE a.entity_type = :entityType " +
-            "AND t." + ae.companyColumn + " = :companyId " +
-            "ORDER BY a.at_ts ASC";
-        if(entityType.equalsIgnoreCase("shifts")) {
+        if (entityType.equalsIgnoreCase("shifts")) {
             sql = """
                 SELECT a.*
                 FROM audit_log a
-                JOIN shifts s ON a.entity_id = s.id
-                JOIN user_company_contracts c ON s.contract_id = c.id
+                LEFT JOIN shifts s ON a.entity_id = s.id
+                LEFT JOIN user_company_contracts c ON s.contract_id = c.id
                 WHERE a.entity_type = :entityType
-                AND c.company_id = :companyId
+                AND (
+                        c.company_id = :companyId
+                        OR (a.after_json->>'company_id')::int = :companyId
+                        OR (a.before_json->>'company_id')::int = :companyId
+                        OR (a.after_json->>'contract_id') IN (
+                            SELECT id::text FROM user_company_contracts WHERE company_id = :companyId
+                            )
+                        OR (a.before_json->>'contract_id') IN (
+                            SELECT id::text FROM user_company_contracts WHERE company_id = :companyId
+                            )
+                    )
+                ORDER BY a.at_ts ASC
+                """;
+        } else {
+            sql = """
+                SELECT a.*
+                FROM audit_log a
+                WHERE a.entity_type = :entityType
+                AND (
+                        (a.after_json->>'company_id')::int = :companyId
+                        OR (a.before_json->>'company_id')::int = :companyId
+                    )
                 ORDER BY a.at_ts ASC
                 """;
         }
 
         return em.createNativeQuery(sql, AuditLog.class)
-            .setParameter("entityType", entityType)
-            .setParameter("companyId", companyId)
             .getResultList()
             .stream()
             .map(r -> auditLogMapper.toDTO((AuditLog) r))
