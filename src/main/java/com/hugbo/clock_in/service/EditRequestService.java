@@ -139,8 +139,6 @@ public class EditRequestService {
             .startTs(requestedChanges.startTs)
             .endTs(requestedChanges.endTs)
             .build();
-        ArrayList<ShiftTask> addedShiftTasks = new ArrayList<>();
-        ArrayList<ShiftBreak> addedShiftBreaks = new ArrayList<>();
         for (ShiftTaskRequestDTO rcShiftTask : requestedChanges.shiftTasks) {
             Task task = taskRepository.findById(rcShiftTask.taskId).orElseThrow();
             ShiftTask newShiftTask = ShiftTask.builder()
@@ -149,7 +147,7 @@ public class EditRequestService {
                 .startTs(rcShiftTask.startTs)
                 .endTs(rcShiftTask.endTs)
                 .build();
-            addedShiftTasks.add(newShiftTask);
+            newShift.shiftTasks.add(newShiftTask);
         }
         for (ShiftBreakRequestDTO rcShiftBreak : requestedChanges.shiftBreaks) {
             ShiftBreak newShiftBreak = ShiftBreak.builder()
@@ -158,7 +156,7 @@ public class EditRequestService {
                 .startTs(rcShiftBreak.startTs)
                 .endTs(rcShiftBreak.endTs)
                 .build();
-            addedShiftBreaks.add(newShiftBreak);
+            newShift.shiftBreaks.add(newShiftBreak);
         }
         shiftRepository.delete(SpecificationUtils.fromFilter(ShiftFilterDTO.builder()
                 .from(newShift.startTs)
@@ -166,8 +164,8 @@ public class EditRequestService {
                 .build()));
 
         newShift = shiftRepository.save(newShift);
-        addedShiftTasks.forEach(shiftTask -> shiftTaskRepository.save(shiftTask));
-        addedShiftBreaks.forEach(shiftBreak -> shiftBreakRepository.save(shiftBreak));
+        newShift.shiftTasks.forEach(shiftTask -> shiftTaskRepository.save(shiftTask));
+        newShift.shiftBreaks.forEach(shiftBreak -> shiftBreakRepository.save(shiftBreak));
 
         return shiftMapper.createCompleteShiftDTO(newShift);
     }
