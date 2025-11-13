@@ -97,15 +97,15 @@ public class EditRequestService {
         return editRequestMapper.toDTO(addedRequest);
     }
 
-    public EditRequestDTO patchEditRequest(EditRequestPatchRequestDTO editRequestPatchRequestDTO, Long editRequestId) {
+    public EditRequestDTO patchEditRequest(EditRequestPatchRequestDTO editRequestPatchRequestDTO, Long editRequestId, Long actorId) {
         EditRequest editRequest = editRequestRepository.findById(editRequestId).orElseThrow();
         validateEditRequestPatchRequest(editRequestPatchRequestDTO);
 
         String toBeReason = editRequestPatchRequestDTO.reason;
         ShiftRequestDTO toBeRequestedChanges = editRequestPatchRequestDTO.requestedChanges;
         Status toBeStatus = editRequestPatchRequestDTO.status;
-        Long toBeReviewedByUserId = editRequestPatchRequestDTO.reviewedByUserId;
-        Instant toBeReviewedAt = editRequestPatchRequestDTO.reviewedAt;
+        Long toBeReviewedByUserId = editRequestPatchRequestDTO.reviewedByUserId != null ? editRequestPatchRequestDTO.reviewedByUserId : toBeStatus != Status.PENDING ? actorId : null;
+        Instant toBeReviewedAt = editRequestPatchRequestDTO.reviewedAt != null ? editRequestPatchRequestDTO.reviewedAt : toBeStatus != Status.PENDING ? Instant.now() : null;
 
         if (toBeReason != null) editRequest.reason = toBeReason;
         if (toBeRequestedChanges != null) editRequest.requestedChanges = objectMapper.valueToTree(toBeRequestedChanges);

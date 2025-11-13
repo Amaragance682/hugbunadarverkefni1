@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hugbo.clock_in.auth.CustomUserDetails;
 import com.hugbo.clock_in.dto.filters.EditRequestFilterDTO;
 import com.hugbo.clock_in.dto.filters.LocationFilterDTO;
 import com.hugbo.clock_in.dto.filters.ShiftFilterDTO;
@@ -181,9 +183,10 @@ public class ManagerController {
     public ResponseEntity<?> patchEditRequest(
         @PathVariable Long companyId,
         @PathVariable Long editRequestId,
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestBody(required = true) EditRequestPatchRequestDTO editRequestPatchRequestDTO
     ) {
-        EditRequestDTO editRequestDTO = editRequestService.patchEditRequest(editRequestPatchRequestDTO, editRequestId);
+        EditRequestDTO editRequestDTO = editRequestService.patchEditRequest(editRequestPatchRequestDTO, editRequestId, customUserDetails.getId());
         return ResponseEntity.ok().body(editRequestDTO);
     }
 
