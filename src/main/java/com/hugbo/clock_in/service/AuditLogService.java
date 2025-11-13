@@ -68,6 +68,8 @@ public class AuditLogService {
         }
 
         return em.createNativeQuery(sql, AuditLog.class)
+            .setParameter("companyId", companyId)
+            .setParameter("entityType", entityType)
             .getResultList()
             .stream()
             .map(r -> auditLogMapper.toDTO((AuditLog) r))
