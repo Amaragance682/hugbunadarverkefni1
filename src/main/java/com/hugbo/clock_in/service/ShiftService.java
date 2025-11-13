@@ -229,7 +229,6 @@ public class ShiftService {
         startTs = startTs == null ? shift.startTs : startTs;
         endTs = endTs == null ? shift.endTs : endTs;
 
-        List<ShiftTask> shiftTasks = shiftTaskRepository.findByShiftId(shift.id);
         for (ShiftTaskPatchRequestDTO task : requestDTO.tasks) {
             ShiftTask shiftTask = shiftTaskRepository.findById(task.id).orElseThrow();
             shiftTask.startTs = task.startTs;
