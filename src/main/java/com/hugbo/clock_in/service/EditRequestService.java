@@ -138,6 +138,8 @@ public class EditRequestService {
             .contract(contract)
             .startTs(requestedChanges.startTs)
             .endTs(requestedChanges.endTs)
+            .shiftTasks(List.of())
+            .shiftBreaks(List.of())
             .build();
         for (ShiftTaskRequestDTO rcShiftTask : requestedChanges.shiftTasks) {
             Task task = taskRepository.findById(rcShiftTask.taskId).orElseThrow();
