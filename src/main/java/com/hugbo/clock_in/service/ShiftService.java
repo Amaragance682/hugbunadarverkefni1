@@ -260,7 +260,7 @@ public class ShiftService {
         for (ShiftBreak shiftBreak : savedShift.shiftBreaks)
             shiftBreakRepository.save(shiftBreak);
 
-        return shiftMapper.createCompleteShiftDTO(shift);
+        return shiftMapper.createCompleteShiftDTO(savedShift);
         // ALSO CREATE AND ADD SHIFT NOTE
     }
 
@@ -330,18 +330,6 @@ public class ShiftService {
                 break;
         }
     }
-
-    /*
-            $ val no neg for parent 
-            $ val no overlap for parent
-            $ val if children -> all children
-            $ val tl of children -> gap-free, fits to parent
-            $ val for each child:
-                $ no neg
-                $ no overlap in-between (overlap between current is fine - since complete overhaul)
-
-                yay
-    */
 
     private void validateShiftPatchRequest(ShiftPatchRequestDTO request, ShiftCompleteDTO shift) {
         Instant startTs = request.startTs != null ? request.startTs : shift.shift.startTs;
