@@ -40,6 +40,10 @@ public class ContractService {
         return contractMapper.toDTO(savedContract);
     }
 
+    public void resign(Long userId, Long companyId) {
+        contractRepository.deleteByUserIdAndCompanyId(userId, companyId);
+    }
+
     public ContractDTO findByUserAndCompanyId(Long userId, Long companyId) {
         Contract contract = contractRepository.findByUserIdAndCompanyId(userId, companyId).orElseThrow();
         return contractMapper.toDTO(contract);

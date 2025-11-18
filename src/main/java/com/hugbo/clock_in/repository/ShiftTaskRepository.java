@@ -1,6 +1,5 @@
 package com.hugbo.clock_in.repository;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,11 +16,4 @@ public interface ShiftTaskRepository extends JpaRepository<ShiftTask, Long> {
         ORDER BY s.startTs DESC
         """)
     Optional<ShiftTask> findOngoingByShift(@Param("shiftId") Long shiftId);
-
-    @Query("""
-        SELECT s FROM ShiftTask s
-        WHERE s.shift.id = :shiftId
-        ORDER BY s.startTs DESC
-        """)
-    List<ShiftTask> findByShiftId(@Param("shiftId") Long shiftId);
 }

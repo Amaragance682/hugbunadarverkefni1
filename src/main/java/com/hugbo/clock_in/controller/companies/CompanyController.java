@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,7 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.hugbo.clock_in.auth.SecurityService;
+
+import com.hugbo.clock_in.auth.CustomUserDetails;
 import com.hugbo.clock_in.dto.request.CompanyPatchRequestDTO;
 import com.hugbo.clock_in.dto.request.CompanyRequestDTO;
 import com.hugbo.clock_in.dto.request.ContractRequestDTO;
@@ -35,6 +38,16 @@ public class CompanyController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getCompanies() {
         List<CompanyDTO> companyDTOs = companyService.getAllCompanies();
+        return ResponseEntity.ok()
+            .body(companyDTOs);
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getMyCompanies(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        List<CompanyDTO> companyDTOs = companyService.getContractedCompanies(customUserDetails.getId());
         return ResponseEntity.ok()
             .body(companyDTOs);
     }
@@ -86,5 +99,24 @@ public class CompanyController {
         ContractDTO contractDTO = contractService.signToCompany(userId, companyId, contractRequestDTO);
 
         return ResponseEntity.ok().body(contractDTO);
+    }
+
+    @DeleteMapping("/{companyId}/resign")
+    public ResponseEntity<?> resignFromCompany(
+        @PathVariable Long companyId,
+        @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        contractService.resign(customUserDetails.getId(), companyId);
+        return ResponseEntity.ok().body("You have resigned from the company");
+    }
+
+    @DeleteMapping("/{companyId}/resign/{userId}")
+    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId) or hasRole('ADMIN')")
+    public ResponseEntity<?> fireUser(
+        @PathVariable Long companyId,
+        @PathVariable Long userId
+    ) {
+        contractService.resign(userId, companyId);
+        return ResponseEntity.ok().body("The user has been fired from the company");
     }
 }

@@ -67,9 +67,6 @@ public class Shift implements TimeRange {
     @OneToMany(mappedBy = "shift")
     public List<ShiftNote> shiftNotes;
 
-    @OneToMany(mappedBy = "shift")
-    public List<ShiftFlag> shiftFlags;
-
     public Instant getStartTs() {
         return startTs;
     }

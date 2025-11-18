@@ -84,6 +84,11 @@ public class EditRequestService {
             .toList();
     }
 
+    public EditRequestDTO getEditRequest(Long id) {
+        EditRequest editRequest = editRequestRepository.findById(id).orElseThrow();
+        return editRequestMapper.toDTO(editRequest);
+    }
+
     public EditRequestDTO addEditRequest(EditRequestRequestDTO editRequestRequestDTO, Long contractId) {
         Contract contract = contractRepository.findById(contractId).orElseThrow();
         EditRequest request = EditRequest.builder()

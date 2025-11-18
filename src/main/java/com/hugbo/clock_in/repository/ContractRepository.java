@@ -1,19 +1,19 @@
 package com.hugbo.clock_in.repository;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.hugbo.clock_in.domain.entity.Contract;
 
+import jakarta.transaction.Transactional;
+
 @Repository
 public interface ContractRepository extends JpaRepository<Contract, Long> {
-    List<Contract> findByUserId(Long userId);
-
     @Query("""
         SELECT COUNT(c) > 0 FROM Contract c WHERE 
         c.user.id = :userId AND c.company.id = :companyId
@@ -29,4 +29,14 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     Optional<Contract> findByUserIdAndCompanyId(
             @Param("userId") Long userId,
             @Param("companyId") Long companyId);
-}
+
+    @Modifying
+    @Transactional
+    @Query("""
+    DELETE FROM Contract c
+    WHERE c.user.id = :userId AND c.company.id = :companyId
+    """)
+    void deleteByUserIdAndCompanyId(
+            @Param("userId") Long userId,
+            @Param("companyId") Long companyId);
+            }

@@ -11,6 +11,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+// Clears the AuditContext so that the user that caused a change to the db
+// does not get transferred over to the next change, basically clears context
 @Component
 public class AuditCleanupFilter extends OncePerRequestFilter {
     @Autowired

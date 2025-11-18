@@ -100,16 +100,6 @@ CREATE TABLE shift_notes (
     foreign key (shift_id) references shifts(id) on delete cascade
 );
 
-CREATE TABLE shift_flags (
-    id serial primary key,
-    shift_id int not null,
-    flag_type text not null,
-    value text not null,
-    created timestamptz not null default current_timestamp,
-    updated timestamptz not null default current_timestamp,
-    foreign key (shift_id) references shifts(id) on delete cascade
-);
-
 CREATE TABLE edit_requests (
     id serial primary key,
     user_id int references users(id) not null,

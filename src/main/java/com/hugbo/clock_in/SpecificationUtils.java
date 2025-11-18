@@ -1,10 +1,11 @@
 package com.hugbo.clock_in;
 
 import java.lang.reflect.Field;
-import java.time.Instant;
 import org.springframework.data.jpa.domain.Specification;
 import jakarta.persistence.criteria.*;
 
+// This class is made to allow for advanced filtering, such as 
+// from/to timestamps, string matching and equality matching for other types.
 public class SpecificationUtils {
     public static <T, F> Specification<T> fromFilter(F filter) {
         return (root, query, cb) -> {

@@ -9,6 +9,7 @@ import com.hugbo.clock_in.dto.request.CompanyRequestDTO;
 import com.hugbo.clock_in.dto.response.CompanyDTO;
 import com.hugbo.clock_in.mappers.CompanyMapper;
 import com.hugbo.clock_in.repository.CompanyRepository;
+
 import jakarta.validation.ValidationException;
 
 @Service
@@ -25,6 +26,11 @@ public class CompanyService {
             .toList();
 
         return companies;
+    }
+
+    public List<CompanyDTO> getContractedCompanies(Long userId) {
+        List<Company> companies = companyRepository.findAllByUserId(userId);
+        return companies.stream().map(c -> companyMapper.toDTO(c)).toList();
     }
 
     public CompanyDTO getCompany(Long companyId) {
@@ -51,10 +57,6 @@ public class CompanyService {
         Company savedCompany = companyRepository.save(company);
 
         return companyMapper.toDTO(savedCompany);
-    }
-
-    public void deleteCompany(Long companyId) {
-        companyRepository.deleteById(companyId);
     }
 
     private void validateCompanyPatchRequest(CompanyPatchRequestDTO companyPatchRequestDTO) {

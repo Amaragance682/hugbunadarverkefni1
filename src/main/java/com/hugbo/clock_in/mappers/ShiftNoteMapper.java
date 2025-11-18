@@ -9,8 +9,6 @@ import com.hugbo.clock_in.dto.response.ShiftNoteDTO;
 @Component
 public class ShiftNoteMapper {
     @Autowired
-    private ShiftMapper shiftMapper;
-    @Autowired
     private UserMapper userMapper;
     public ShiftNoteDTO toDTO(ShiftNote shiftNote) {
         if (shiftNote == null) return null;

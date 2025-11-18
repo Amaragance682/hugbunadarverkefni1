@@ -55,13 +55,6 @@ public class ShiftService {
     @Autowired
     private ShiftMapper shiftMapper;
     @Autowired
-    private ShiftTaskMapper shiftTaskMapper;
-    @Autowired
-    private ShiftBreakMapper shiftBreakMapper;
-    @Autowired
-    private EditRequestMapper editRequestMapper;
-    
-    @Autowired
     private ContractRepository contractRepository;
     @Autowired
     private TaskRepository taskRepository;
@@ -74,31 +67,6 @@ public class ShiftService {
         List<Shift> shifts = shiftRepository.findAll(spec);
 
         return shifts
-            .stream()
-            .map(shift -> shiftMapper.createCompleteShiftDTO(shift))
-            .toList();
-    }
-
-
-    public List<ShiftDTO> getAllShifts() {
-        return shiftRepository
-            .findAll()
-            .stream()
-            .map(shift -> shiftMapper.toDTO(shift))
-            .toList();
-    }
-
-    public List<ShiftDTO> getAllShiftsByCompany(Long companyId) {
-        return shiftRepository
-            .findByCompanyId(companyId)
-            .stream()
-            .map(shift -> shiftMapper.toDTO(shift))
-            .toList();
-    }
-
-    public List<ShiftCompleteDTO> getOngoingShiftsByCompany(Long companyId) {
-        return shiftRepository
-            .findOngoingShiftsByCompany(companyId)
             .stream()
             .map(shift -> shiftMapper.createCompleteShiftDTO(shift))
             .toList();
@@ -193,7 +161,7 @@ public class ShiftService {
         return shiftMapper.createCompleteShiftDTO(shift);
     }
 
-    public Shift createShift(Long userId, Long companyId, Long taskId) {
+    private Shift createShift(Long userId, Long companyId, Long taskId) {
         Contract contract = contractRepository.findByUserIdAndCompanyId(userId, companyId).orElseThrow();
 
         Shift newShift = Shift.builder()
@@ -202,7 +170,7 @@ public class ShiftService {
             .build();
         return newShift;
     }
-    public ShiftTask createShiftTask(Shift shift, Task task) {
+    private ShiftTask createShiftTask(Shift shift, Task task) {
         ShiftTask newShiftTask = ShiftTask.builder()
             .shift(shift)
             .task(task)
@@ -210,7 +178,7 @@ public class ShiftService {
             .build();
         return newShiftTask;
     }
-    public ShiftBreak createShiftBreak(Shift shift, BreakRequestDTO breakRequestDTO) {
+    private ShiftBreak createShiftBreak(Shift shift, BreakRequestDTO breakRequestDTO) {
         ShiftBreak newShiftBreak = ShiftBreak.builder()
             .shift(shift)
             .breakType(breakRequestDTO.breakType)
@@ -282,19 +250,6 @@ public class ShiftService {
 
         System.out.println("starting switch case");
         switch (fit) {
-            case Fit.RATIO:
-                /*
-                long originalDuration = startT.until(endT).getSeconds();
-                long startPercentage;
-                long endPercentage;
-                timeline.forEach(part -> {
-                    long startDuration = startO.until(part.getStartTs()).getSeconds();
-                    long endDuration = startO.until(part.getEndTs()).getSeconds();
-                    long originalStartP = originalDuration / startDuration;
-                    long originalEndP = originalDuration / endDuration;
-                });
-                */
-                throw new ValidationException("Incomplete - finish before testing!");
             case Fit.ALIGN_LEFT:
                 for (int i = 0; i < timeline.size(); i++) {
                     T part = timeline.get(i);
@@ -346,9 +301,7 @@ public class ShiftService {
         handleNegativeDuration(shift.shift);
         handleOverlaps(shift.shift, contractShifts);
 
-        System.out.println("checkpoint 1");
         validateShiftTaskRequests(request.tasks, shift);
-        System.out.println("checkpoint 2");
         validateShiftBreakRequests(request.breaks, shift);
         request.tasks.forEach(t -> {
             validateShiftTaskRequest(t);
@@ -363,28 +316,19 @@ public class ShiftService {
     private void validateShiftTaskRequests(List<ShiftTaskPatchRequestDTO> taskRequests, ShiftCompleteDTO shift) {
         boolean areTasks = !taskRequests.isEmpty();
         if (areTasks) {
-            System.out.println("here?");
             List<Long> idsToCheck = new ArrayList<>(shift.shiftTasks
                 .stream()
                 .map(v -> v.id)
                 .toList());
-            System.out.println("got through map");
             taskRequests.forEach(t -> idsToCheck.remove(t.id));
-            System.out.println("got through forEAch");
             if (!idsToCheck.isEmpty())
                 throw new ValidationException("If a change to shift tasks is requested, all shift tasks must be accounted for");
 
-            System.out.println("checkpoint 3");
-
             validateFitsToTimeRange(taskRequests, shift.shift);
-
-            System.out.println("checkpoint 4");
 
             taskRequests.forEach(request -> {
                 handleOverlaps(request, taskRequests);
-                System.out.println("checkpoint 5");
                 validateShiftTaskRequest(request);
-                System.out.println("checkpoint 6");
             });
         }
     }

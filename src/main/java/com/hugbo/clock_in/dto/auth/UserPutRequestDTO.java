@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RegisterRequestDTO implements AuthRequestDTO {
+public class UserPutRequestDTO {
     @NotBlank(message = "Name is required")
     @Size(min = 2, max = 128, message = "Name must be between 2 and 128 characters")
     public String name;
@@ -22,14 +22,4 @@ public class RegisterRequestDTO implements AuthRequestDTO {
     @NotBlank(message = "Password is required")
     @Size(min = 8, message = "Password must be longer than 8 characters")
     public String password;
-
-    public String getEmail() {
-        return email;
-    }
-    public String getName() {
-        return name;
-    }
-    public String getPassword() {
-        return password;
-    }
 }

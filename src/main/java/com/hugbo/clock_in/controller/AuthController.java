@@ -1,14 +1,19 @@
 package com.hugbo.clock_in.controller;
 
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.hugbo.clock_in.auth.CustomUserDetails;
 import com.hugbo.clock_in.dto.auth.*;
+import com.hugbo.clock_in.dto.response.UserDTO;
 import com.hugbo.clock_in.exception.AuthenticationException;
 import com.hugbo.clock_in.service.AuthService;
 
@@ -42,5 +47,22 @@ public class AuthController {
             return ResponseEntity.badRequest()
                 .body(e.getMessage());
         }
+    }
+
+    @DeleteMapping("/me")
+    public ResponseEntity<?> delete(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        authService.deleteUser(customUserDetails.getId());
+        return ResponseEntity.ok().body("Your account has been deleted");
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<?> replaceUser(
+        @RequestBody UserPutRequestDTO userPutRequestDTO,
+        @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        UserDTO changedUser = authService.putUser(userPutRequestDTO, customUserDetails.getId());
+        return ResponseEntity.ok().body(changedUser);
     }
 }

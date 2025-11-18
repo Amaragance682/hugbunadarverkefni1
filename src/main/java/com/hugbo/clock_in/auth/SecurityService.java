@@ -8,7 +8,6 @@ import com.hugbo.clock_in.repository.ContractRepository;
 @Service
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityService {
-    
     private final ContractRepository contractRepository;
     
     public SecurityService(ContractRepository contractRepository) {

@@ -3,6 +3,7 @@ package com.hugbo.clock_in.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import com.hugbo.clock_in.domain.entity.User;
 import com.hugbo.clock_in.dto.auth.AuthRequestDTO;
 import com.hugbo.clock_in.dto.auth.AuthResponseDTO;
 import com.hugbo.clock_in.dto.auth.RegisterRequestDTO;
+import com.hugbo.clock_in.dto.auth.UserPutRequestDTO;
 import com.hugbo.clock_in.dto.response.UserDTO;
 import com.hugbo.clock_in.exception.AuthenticationException;
 import com.hugbo.clock_in.mappers.UserMapper;
@@ -56,7 +58,6 @@ public class AuthService {
             User user = new User();
             user.name = request.name;
             user.email = request.email;
-            user.admin = request.admin;
             String hashedPassword = passwordEncoder.encode(request.password);
             user.password = hashedPassword;
 
@@ -78,5 +79,20 @@ public class AuthService {
 
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream().map(user -> userMapper.toDTO(user)).toList();
+    }
+
+    public void deleteUser(Long userId) {
+        userRepository.deleteById(userId);
+    }
+
+    public UserDTO putUser(UserPutRequestDTO userPutRequestDTO, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow();
+        user.name = userPutRequestDTO.name;
+        user.email = userPutRequestDTO.email;
+        String hashedPassword = passwordEncoder.encode(userPutRequestDTO.password);
+        user.password = hashedPassword;
+        User savedUser = userRepository.save(user);
+
+        return userMapper.toDTO(savedUser);
     }
 }

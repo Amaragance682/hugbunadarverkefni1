@@ -15,31 +15,30 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hugbo.clock_in.auth.CustomUserDetails;
 import com.hugbo.clock_in.dto.employee.ClockInDTO;
-import com.hugbo.clock_in.dto.employee.EmployeeIndexDTO;
 import com.hugbo.clock_in.dto.filters.ShiftFilterDTO;
+import com.hugbo.clock_in.dto.filters.TaskFilterDTO;
 import com.hugbo.clock_in.dto.request.BreakRequestDTO;
 import com.hugbo.clock_in.dto.request.EditRequestRequestDTO;
-import com.hugbo.clock_in.dto.request.LocationRequestDTO;
 import com.hugbo.clock_in.dto.request.SwitchTaskRequestDTO;
 import com.hugbo.clock_in.dto.response.ContractDTO;
 import com.hugbo.clock_in.dto.response.EditRequestDTO;
 import com.hugbo.clock_in.dto.response.LocationDTO;
 import com.hugbo.clock_in.dto.response.ShiftCompleteDTO;
-import com.hugbo.clock_in.dto.response.ShiftDTO;
+import com.hugbo.clock_in.dto.response.TaskDTO;
 import com.hugbo.clock_in.service.ContractService;
 import com.hugbo.clock_in.service.EditRequestService;
-import com.hugbo.clock_in.service.EmployeeService;
 import com.hugbo.clock_in.service.LocationService;
 import com.hugbo.clock_in.service.ShiftService;
+import com.hugbo.clock_in.service.TaskService;
 
 @RequestMapping("/companies/{companyId}/employee")
 @RestController
 @PreAuthorize("@securityService.isCompanyEmployeeOrManager(authentication.principal.id, #companyId)")
 public class EmployeeController {
     @Autowired
-    private EmployeeService employeeService;
-    @Autowired
     private LocationService locationService;
+    @Autowired
+    private TaskService taskService;
     @Autowired
     private ShiftService shiftService;
     @Autowired
@@ -47,14 +46,9 @@ public class EmployeeController {
     @Autowired
     private ContractService contractService;
 
-    @GetMapping
-    public ResponseEntity<?> index(
-    @PathVariable Long companyId,
-    @AuthenticationPrincipal CustomUserDetails customUserDetails
-    ) {
-        EmployeeIndexDTO index = employeeService.getEmployeeIndexData(companyId, customUserDetails.getId());
-        return ResponseEntity.ok().body(index);
-    }
+    // *********************
+    // * GET's
+    // *********************
 
     @GetMapping("/locations")
     public ResponseEntity<?> getLocations(
@@ -63,6 +57,34 @@ public class EmployeeController {
         List<LocationDTO> locationDTOs = locationService.getLocationsAtCompany(companyId);
         return ResponseEntity.ok().body(locationDTOs);
     }
+
+    @GetMapping("/tasks")
+    public ResponseEntity<?> getTasks(
+        @PathVariable Long companyId,
+        @RequestBody TaskFilterDTO taskFilterDTO
+    ) {
+        taskFilterDTO.companyId = companyId;
+        List<TaskDTO> taskDTOs = taskService.getTasks(taskFilterDTO);
+        return ResponseEntity.ok().body(taskDTOs);
+    }
+
+    @GetMapping("/shifts")
+    public ResponseEntity<?> getShifts(
+        @PathVariable Long companyId,
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @RequestBody(required = true) ShiftFilterDTO shiftFilterDTO
+    ) {
+        Long userId = customUserDetails.getId();
+        shiftFilterDTO.userId = userId;
+        shiftFilterDTO.companyId = companyId;
+
+        List<ShiftCompleteDTO> shiftDTOs = shiftService.getShifts(shiftFilterDTO);
+        return ResponseEntity.ok().body(shiftDTOs);
+    }
+
+    // *******************************
+    // * CLOCK-IN CLOCK-OUT & RELATED
+    // *******************************
 
     @PostMapping("/clock-in")
     @PreAuthorize("@securityService.isCompanyEmployeeOrManager(authentication.principal.id, #companyId)")
@@ -116,19 +138,9 @@ public class EmployeeController {
         return ResponseEntity.ok().body(shiftDTO);
     }
 
-    @GetMapping("/shifts")
-    @PreAuthorize("@securityService.isCompanyEmployeeOrManager(authentication.principal.id, #companyId) or hasRole('ADMIN')")
-    public ResponseEntity<?> getShifts(
-        @PathVariable Long companyId,
-        @AuthenticationPrincipal CustomUserDetails customUserDetails,
-        @RequestBody(required = true) ShiftFilterDTO shiftFilterDTO
-    ) {
-        Long userId = customUserDetails.getId();
-        shiftFilterDTO.userId = userId;
-
-        List<ShiftCompleteDTO> shiftDTOs = shiftService.getShifts(shiftFilterDTO);
-        return ResponseEntity.ok().body(shiftDTOs);
-    }
+    // ************************
+    // * POST's
+    // ************************
 
     @PostMapping("/edit-request")
     @PreAuthorize("@securityService.isCompanyEmployee(authentication.principal.id, #companyId)")

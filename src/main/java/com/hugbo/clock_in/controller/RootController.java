@@ -53,8 +53,6 @@ public class RootController {
     @Autowired
     private EditRequestService editRequestService;
     @Autowired
-    private ShiftMapper shiftMapper;
-    @Autowired
     private AuditLogService auditLogService;
 
     @GetMapping("/all")

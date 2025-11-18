@@ -178,6 +178,16 @@ public class ManagerController {
         return ResponseEntity.ok().body(editRequestDTOs);
     }
 
+    @GetMapping("/edit-requests/{editRequestId}")
+    @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId) or hasRole('ADMIN')")
+    public ResponseEntity<?> getEditRequest(
+        @PathVariable Long companyId,
+        @PathVariable Long editRequestId
+    ) {
+        EditRequestDTO editRequestDTO = editRequestService.getEditRequest(editRequestId);
+        return ResponseEntity.ok().body(editRequestDTO);
+    }
+
     @PatchMapping("/edit-requests/{editRequestId}")
     @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId) or hasRole('ADMIN')")
     public ResponseEntity<?> patchEditRequest(

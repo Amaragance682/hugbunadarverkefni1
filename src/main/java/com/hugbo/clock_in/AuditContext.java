@@ -10,6 +10,8 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+// Self-explanatory, sets the user that caused an insertion/update/deletion
+// into the database, so that audit_log correctly logs the user that caused the change.
 @Component
 public class AuditContext {
     @Autowired
