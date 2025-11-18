@@ -71,9 +71,10 @@ public class ManagerController {
     public ResponseEntity<?> patchShift(
         @PathVariable Long companyId,
         @PathVariable Long shiftId,
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestBody(required = true) ShiftPatchRequestDTO shiftPatchRequestDTO
     ) {
-        ShiftCompleteDTO patchedShift = shiftService.patchShift(shiftId, shiftPatchRequestDTO);
+        ShiftCompleteDTO patchedShift = shiftService.patchShift(shiftId, shiftPatchRequestDTO, customUserDetails.getUser());
         return ResponseEntity.ok().body(patchedShift);
     }
 

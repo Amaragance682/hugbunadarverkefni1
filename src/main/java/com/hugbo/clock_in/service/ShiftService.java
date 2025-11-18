@@ -14,13 +14,16 @@ import org.yaml.snakeyaml.util.Tuple;
 import com.hugbo.clock_in.Fit;
 import com.hugbo.clock_in.SpecificationUtils;
 import com.hugbo.clock_in.TimeRange;
+import com.hugbo.clock_in.auth.CustomUserDetails;
 import com.hugbo.clock_in.domain.entity.Contract;
 import com.hugbo.clock_in.domain.entity.EditRequest;
 import com.hugbo.clock_in.domain.entity.Location;
 import com.hugbo.clock_in.domain.entity.Shift;
 import com.hugbo.clock_in.domain.entity.ShiftBreak;
+import com.hugbo.clock_in.domain.entity.ShiftNote;
 import com.hugbo.clock_in.domain.entity.ShiftTask;
 import com.hugbo.clock_in.domain.entity.Task;
+import com.hugbo.clock_in.domain.entity.User;
 import com.hugbo.clock_in.dto.filters.ShiftFilterDTO;
 import com.hugbo.clock_in.dto.request.BreakRequestDTO;
 import com.hugbo.clock_in.dto.request.ShiftBreakPatchRequestDTO;
@@ -38,6 +41,7 @@ import com.hugbo.clock_in.mappers.ShiftTaskMapper;
 import com.hugbo.clock_in.repository.ContractRepository;
 import com.hugbo.clock_in.repository.LocationRepository;
 import com.hugbo.clock_in.repository.ShiftBreakRepository;
+import com.hugbo.clock_in.repository.ShiftNoteRepository;
 import com.hugbo.clock_in.repository.ShiftRepository;
 import com.hugbo.clock_in.repository.ShiftTaskRepository;
 import com.hugbo.clock_in.repository.TaskRepository;
@@ -52,6 +56,8 @@ public class ShiftService {
     private ShiftTaskRepository shiftTaskRepository;
     @Autowired
     private ShiftBreakRepository shiftBreakRepository;
+    @Autowired
+    private ShiftNoteRepository shiftNoteRepository;
     @Autowired
     private ShiftMapper shiftMapper;
     @Autowired
@@ -187,7 +193,7 @@ public class ShiftService {
         return newShiftBreak;
     }
 
-    public ShiftCompleteDTO patchShift(Long shiftId, ShiftPatchRequestDTO requestDTO) {
+    public ShiftCompleteDTO patchShift(Long shiftId, ShiftPatchRequestDTO requestDTO, User user) {
         Shift shift = shiftRepository.findById(shiftId).orElseThrow();
         validateShiftPatchRequest(requestDTO, shiftMapper.createCompleteShiftDTO(shift));
 
@@ -227,8 +233,15 @@ public class ShiftService {
         for (ShiftBreak shiftBreak : savedShift.shiftBreaks)
             shiftBreakRepository.save(shiftBreak);
 
+        ShiftNote shiftNote = ShiftNote.builder()
+            .shift(savedShift)
+            .note("Changed because of: " + requestDTO.reason)
+            .createdBy(user)
+            .build();
+
+        shiftNoteRepository.save(shiftNote);
+
         return shiftMapper.createCompleteShiftDTO(savedShift);
-        // ALSO CREATE AND ADD SHIFT NOTE
     }
 
     private <T extends TimeRange,
@@ -248,7 +261,6 @@ public class ShiftService {
         boolean alignsLeft = timeline.getFirst().getStartTs().equals(startO);
         boolean alignsRight = timeline.getLast().getEndTs().equals(endO);
 
-        System.out.println("starting switch case");
         switch (fit) {
             case Fit.ALIGN_LEFT:
                 for (int i = 0; i < timeline.size(); i++) {

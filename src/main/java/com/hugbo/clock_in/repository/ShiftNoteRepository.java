@@ -1,0 +1,8 @@
+package com.hugbo.clock_in.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.hugbo.clock_in.domain.entity.ShiftNote;
+
+public interface ShiftNoteRepository extends JpaRepository<ShiftNote, Long> {
+}
