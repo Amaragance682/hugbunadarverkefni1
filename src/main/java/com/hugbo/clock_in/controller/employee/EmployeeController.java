@@ -82,6 +82,24 @@ public class EmployeeController {
         return ResponseEntity.ok().body(shiftDTOs);
     }
 
+    // ************************
+    // * POST's
+    // ************************
+
+    @PostMapping("/edit-request")
+    @PreAuthorize("@securityService.isCompanyEmployee(authentication.principal.id, #companyId)")
+    public ResponseEntity<?> addEditRequest(
+        @PathVariable Long companyId,
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @RequestBody(required = true) EditRequestRequestDTO editRequestRequestDTO
+    ) {
+        Long userId = customUserDetails.getId();
+        ContractDTO contract = contractService.findByUserAndCompanyId(userId, companyId);
+
+        EditRequestDTO editRequestDTO = editRequestService.addEditRequest(editRequestRequestDTO, contract.id);
+        return ResponseEntity.ok().body(editRequestDTO);
+    }
+
     // *******************************
     // * CLOCK-IN CLOCK-OUT & RELATED
     // *******************************
@@ -136,23 +154,5 @@ public class EmployeeController {
     ) {
         ShiftCompleteDTO shiftDTO = shiftService.endBreak(customUserDetails.getId(), companyId);
         return ResponseEntity.ok().body(shiftDTO);
-    }
-
-    // ************************
-    // * POST's
-    // ************************
-
-    @PostMapping("/edit-request")
-    @PreAuthorize("@securityService.isCompanyEmployee(authentication.principal.id, #companyId)")
-    public ResponseEntity<?> addEditRequest(
-        @PathVariable Long companyId,
-        @AuthenticationPrincipal CustomUserDetails customUserDetails,
-        @RequestBody(required = true) EditRequestRequestDTO editRequestRequestDTO
-    ) {
-        Long userId = customUserDetails.getId();
-        ContractDTO contract = contractService.findByUserAndCompanyId(userId, companyId);
-
-        EditRequestDTO editRequestDTO = editRequestService.addEditRequest(editRequestRequestDTO, contract.id);
-        return ResponseEntity.ok().body(editRequestDTO);
     }
 }
