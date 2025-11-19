@@ -10,9 +10,11 @@ import com.hugbo.clock_in.SpecificationUtils;
 import com.hugbo.clock_in.domain.entity.Company;
 import com.hugbo.clock_in.domain.entity.Location;
 import com.hugbo.clock_in.domain.entity.Task;
+import com.hugbo.clock_in.dto.filters.ShiftFilterDTO;
 import com.hugbo.clock_in.dto.filters.TaskFilterDTO;
 import com.hugbo.clock_in.dto.request.TaskPatchRequestDTO;
 import com.hugbo.clock_in.dto.request.TaskRequestDTO;
+import com.hugbo.clock_in.dto.response.ShiftCompleteDTO;
 import com.hugbo.clock_in.dto.response.TaskDTO;
 import com.hugbo.clock_in.mappers.TaskMapper;
 import com.hugbo.clock_in.repository.CompanyRepository;
@@ -32,6 +34,8 @@ public class TaskService {
     private CompanyRepository companyRepository;
     @Autowired
     private LocationRepository locationRepository;
+    @Autowired
+    private ShiftService shiftService;
 
     public List<TaskDTO> getAllTasks() {
         return getTasks(new TaskFilterDTO());
@@ -80,6 +84,16 @@ public class TaskService {
     }
 
     public void deleteTask(Long taskId) {
+        List<ShiftCompleteDTO> shifts = shiftService.getShifts(new ShiftFilterDTO());
+        shifts = shifts
+            .stream()
+            .filter(s ->
+                    s.shift.endTs == null && 
+                    s.shiftTasks.stream().anyMatch(st ->
+                        st.task.id == taskId))
+            .toList();
+        if (shifts.size() > 0) throw new IllegalStateException(
+                "Some shifts are currently working on this task, so please refrain from deleting tasks which are still worked on:\n" + shifts);
         taskRepository.deleteById(taskId);
     }
 
