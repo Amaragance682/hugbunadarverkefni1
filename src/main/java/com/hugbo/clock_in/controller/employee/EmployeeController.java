@@ -1,8 +1,10 @@
 package com.hugbo.clock_in.controller.employee;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,10 +13,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hugbo.clock_in.auth.CustomUserDetails;
 import com.hugbo.clock_in.dto.employee.ClockInDTO;
+import com.hugbo.clock_in.dto.filters.LocationFilterDTO;
 import com.hugbo.clock_in.dto.filters.ShiftFilterDTO;
 import com.hugbo.clock_in.dto.filters.TaskFilterDTO;
 import com.hugbo.clock_in.dto.request.BreakRequestDTO;
@@ -52,19 +56,35 @@ public class EmployeeController {
 
     @GetMapping("/locations")
     public ResponseEntity<?> getLocations(
-    @PathVariable Long companyId
+        @PathVariable Long companyId,
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) String address
     ) {
-        List<LocationDTO> locationDTOs = locationService.getLocationsAtCompany(companyId);
+        LocationFilterDTO filter = LocationFilterDTO.builder()
+            .companyId(companyId)
+            .name(name)
+            .address(address)
+            .build();
+        List<LocationDTO> locationDTOs = locationService.getLocations(filter);
         return ResponseEntity.ok().body(locationDTOs);
     }
 
     @GetMapping("/tasks")
     public ResponseEntity<?> getTasks(
         @PathVariable Long companyId,
-        @RequestBody TaskFilterDTO taskFilterDTO
+        @RequestParam(required = false) Long locationId,
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) String description,
+        @RequestParam(required = false, defaultValue = "false") boolean isFinished
     ) {
-        taskFilterDTO.companyId = companyId;
-        List<TaskDTO> taskDTOs = taskService.getTasks(taskFilterDTO);
+        TaskFilterDTO filter = TaskFilterDTO.builder()
+            .companyId(companyId)
+            .locationId(locationId)
+            .name(name)
+            .description(description)
+            .isFinished(isFinished)
+            .build();
+        List<TaskDTO> taskDTOs = taskService.getTasks(filter);
         return ResponseEntity.ok().body(taskDTOs);
     }
 
@@ -72,13 +92,18 @@ public class EmployeeController {
     public ResponseEntity<?> getShifts(
         @PathVariable Long companyId,
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
-        @RequestBody(required = true) ShiftFilterDTO shiftFilterDTO
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to
     ) {
         Long userId = customUserDetails.getId();
-        shiftFilterDTO.userId = userId;
-        shiftFilterDTO.companyId = companyId;
+        ShiftFilterDTO filter = ShiftFilterDTO.builder()
+            .companyId(companyId)
+            .userId(userId)
+            .from(from)
+            .to(to)
+            .build();
 
-        List<ShiftCompleteDTO> shiftDTOs = shiftService.getShifts(shiftFilterDTO);
+        List<ShiftCompleteDTO> shiftDTOs = shiftService.getShifts(filter);
         return ResponseEntity.ok().body(shiftDTOs);
     }
 

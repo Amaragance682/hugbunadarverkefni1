@@ -30,42 +30,48 @@ CREATE TABLE companies (
 
 CREATE TABLE locations (
     id serial primary key,
-    company_id int references companies(id) not null,
+    company_id int not null,
     name varchar(128) not null,
     address varchar(256) not null,
     created timestamptz not null default current_timestamp,
     updated timestamptz not null default current_timestamp,
-    unique(company_id, address)
+    unique(company_id, address),
+    foreign key (company_id) references companies(id) on delete cascade
 );
 
 CREATE TABLE user_company_contracts (
     id serial primary key,
-    user_id int references users(id) not null,
-    company_id int references companies(id) not null,
+    user_id int not null,
+    company_id int not null,
     contract_settings JSONB,
     role text check (role in ('EMPLOYEE', 'MANAGER')) not null,
     created timestamptz not null default current_timestamp,
-    updated timestamptz not null default current_timestamp
+    updated timestamptz not null default current_timestamp,
+    foreign key (user_id) references users(id) on delete cascade,
+    foreign key (company_id) references companies(id) on delete cascade
 );
 
 CREATE TABLE tasks (
     id serial primary key,
-    company_id int references companies(id) not null,
-    location_id int references locations(id),
+    company_id int not null,
+    location_id int not null,
     name text not null,
     description text,
     is_finished boolean default false,
     created timestamptz not null default current_timestamp,
-    updated timestamptz not null default current_timestamp
+    updated timestamptz not null default current_timestamp,
+    foreign key (company_id) references companies(id) on delete cascade,
+    foreign key (location_id) references locations(id) on delete cascade
 );
 
 CREATE TABLE shifts (
     id serial primary key,
-    contract_id int references user_company_contracts(id) not null,
+    contract_id int not null,
     start_ts timestamptz not null,
     end_ts timestamptz,
     created timestamptz not null default current_timestamp,
-    updated timestamptz not null default current_timestamp
+    updated timestamptz not null default current_timestamp,
+    foreign key (contract_id) references user_company_contracts(id) on delete cascade
 );
 
 CREATE TABLE shift_tasks (
@@ -102,14 +108,15 @@ CREATE TABLE shift_notes (
 
 CREATE TABLE edit_requests (
     id serial primary key,
-    user_id int references users(id) not null,
+    user_id int not null,
     reason text,
     requested_changes JSONB not null,
     status text not null default 'pending',
     reviewed_by int references users(id),
     reviewed_at timestamptz,
     created timestamptz not null default current_timestamp,
-    updated timestamptz not null default current_timestamp
+    updated timestamptz not null default current_timestamp,
+    foreign key (user_id) references users(id) on delete cascade
 );
 
 CREATE TABLE audit_log (

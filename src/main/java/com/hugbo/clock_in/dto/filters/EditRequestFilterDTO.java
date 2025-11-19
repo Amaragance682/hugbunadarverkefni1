@@ -5,6 +5,13 @@ import java.time.Instant;
 import com.hugbo.clock_in.FilterPath;
 import com.hugbo.clock_in.domain.entity.Status;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class EditRequestFilterDTO {
     @FilterPath("user.id")
     public Long userId;

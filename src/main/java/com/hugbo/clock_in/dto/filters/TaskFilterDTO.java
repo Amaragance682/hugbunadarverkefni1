@@ -2,6 +2,13 @@ package com.hugbo.clock_in.dto.filters;
 
 import com.hugbo.clock_in.FilterPath;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class TaskFilterDTO {
     @FilterPath("location.id")
     public Long locationId;

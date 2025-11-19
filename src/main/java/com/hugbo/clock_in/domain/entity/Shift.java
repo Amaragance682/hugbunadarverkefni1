@@ -6,6 +6,8 @@ import java.util.Objects;
 
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -40,6 +42,7 @@ public class Shift implements TimeRange {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "contract_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     public Contract contract;
 
     @NotNull

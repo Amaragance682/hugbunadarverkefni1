@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Objects;
 
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
@@ -42,11 +44,13 @@ public class Contract {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     public User user;
 
     @NotNull
     @ManyToOne
     @JoinColumn(name = "company_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     public Company company;
 
     @JdbcTypeCode(SqlTypes.JSON)

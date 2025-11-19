@@ -1,7 +1,9 @@
 package com.hugbo.clock_in.controller.manager;
 
+import java.time.Instant;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hugbo.clock_in.auth.CustomUserDetails;
+import com.hugbo.clock_in.domain.entity.Status;
 import com.hugbo.clock_in.dto.filters.EditRequestFilterDTO;
 import com.hugbo.clock_in.dto.filters.LocationFilterDTO;
 import com.hugbo.clock_in.dto.filters.ShiftFilterDTO;
@@ -54,10 +57,20 @@ public class ManagerController {
     @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId) or hasRole('ADMIN')")
     public ResponseEntity<?> getShifts(
         @PathVariable Long companyId,
-        @RequestParam boolean isOngoing,
-        @RequestBody(required = true) ShiftFilterDTO shiftFilterDTO
+        @RequestParam(required = false) Long contractId,
+        @RequestParam(required = false) Long userId,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to,
+        @RequestParam(required = false) boolean isOngoing
     ) {
-        List<ShiftCompleteDTO> shiftDTOs = shiftService.getShifts(shiftFilterDTO);
+        ShiftFilterDTO filter = ShiftFilterDTO.builder()
+            .companyId(companyId)
+            .userId(userId)
+            .contractId(contractId)
+            .from(from)
+            .to(to)
+            .build();
+        List<ShiftCompleteDTO> shiftDTOs = shiftService.getShifts(filter);
         if (isOngoing)
             shiftDTOs = shiftDTOs
                 .stream()
@@ -85,9 +98,15 @@ public class ManagerController {
     @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId) or hasRole('ADMIN')")
     public ResponseEntity<?> getLocations(
         @PathVariable Long companyId,
-        @RequestBody(required = true) LocationFilterDTO locationFilterDTO
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) String address
     ) {
-        List<LocationDTO> locationDTOs = locationService.getLocations(locationFilterDTO);
+        LocationFilterDTO filter = LocationFilterDTO.builder()
+            .companyId(companyId)
+            .name(name)
+            .address(address)
+            .build();
+        List<LocationDTO> locationDTOs = locationService.getLocations(filter);
         return ResponseEntity.ok().body(locationDTOs);
     }
 
@@ -129,9 +148,19 @@ public class ManagerController {
     @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId) or hasRole('ADMIN')")
     public ResponseEntity<?> getTasks(
         @PathVariable Long companyId,
-        @RequestBody(required = true) TaskFilterDTO taskFilterDTO
+        @RequestParam(required = false) Long locationId,
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) String description,
+        @RequestParam(required = false, defaultValue = "false") boolean isFinished
     ) {
-        List<TaskDTO> taskDTOs = taskService.getTasks(taskFilterDTO);
+        TaskFilterDTO filter = TaskFilterDTO.builder()
+            .companyId(companyId)
+            .locationId(locationId)
+            .name(name)
+            .description(description)
+            .isFinished(isFinished)
+            .build();
+        List<TaskDTO> taskDTOs = taskService.getTasks(filter);
         return ResponseEntity.ok().body(taskDTOs);
     }
 
@@ -173,9 +202,26 @@ public class ManagerController {
     @PreAuthorize("@securityService.isCompanyManager(authentication.principal.id, #companyId) or hasRole('ADMIN')")
     public ResponseEntity<?> getEditRequests(
         @PathVariable Long companyId,
-        @RequestBody(required = true) EditRequestFilterDTO editRequestFilterDTO
+        @RequestParam(required = false) Long userId,
+        @RequestParam(required = false) Long shiftId,
+        @RequestParam(required = false) String reason,
+        @RequestParam(required = false) Status status,
+        @RequestParam(required = false) Long reviewedByUserId,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant reviewedAtFrom,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant reviewedAtTo,
+        @RequestParam(required = false) boolean isOngoing
     ) {
-        List<EditRequestDTO> editRequestDTOs = editRequestService.getEditRequests(editRequestFilterDTO);
+        EditRequestFilterDTO filter = EditRequestFilterDTO.builder()
+            .userId(userId)
+            .shiftId(shiftId)
+            .companyId(companyId)
+            .reason(reason)
+            .status(status)
+            .reviewedByUserId(reviewedByUserId)
+            .reviewedAtFrom(reviewedAtFrom)
+            .reviewedAtTo(reviewedAtTo)
+            .build();
+        List<EditRequestDTO> editRequestDTOs = editRequestService.getEditRequests(filter);
         return ResponseEntity.ok().body(editRequestDTOs);
     }
 
